@@ -1,0 +1,61 @@
+@startuml
+'https://plantuml.com/class-diagram
+package asteroids{
+class AsteroidsControlSystem implements IEntityProcessingService, IPostEntityProcessingService
+class AsteroidsPlugin implements IGamePluginService
+class AsteroidsPostControlSystem implements IPostEntityProcessingService
+class AsteroidsSplitImpl implements SplitAsteroids
+}
+
+package bullet{
+class BulletControlSystem implements IEntityProcessingService, BulletSPI
+class BulletPlugin implements IGamePluginService
+}
+
+package collisions{
+class Collisions implements IPostEntityProcessingService
+}
+
+package common{
+class Entity implements Serializable
+class GameData
+class GameKeys
+class World
+interface IEntityProcessingService
+interface IGamePluginService
+interface IPostEntityProcessingService
+}
+
+package commonasteroids{
+class Asteroids extends Entity
+interface SplitAsteroids
+}
+
+package commonbullet{
+class Bullet extends Entity
+interface BulletSPI
+}
+
+package core{
+class Game
+class HelperClass
+class Main extends Application
+}
+
+package enemy{
+class Enemy extends Entity
+class EnemyControlSystem implements IEntityProcessingService
+class EnemyPlugin implements IGamePluginService
+}
+
+package player{
+class Player extends Entity
+class PlayerControlSystem implements IEntityProcessingService
+class PlayerPlugin implements IGamePluginService
+}
+
+package plugins{
+class EntityControlSystem implements IEntityProcessingService
+}
+
+@enduml
