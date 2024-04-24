@@ -1,0 +1,44 @@
+@startuml
+'https://plantuml.com/component-diagram
+
+
+package "Entities"{
+[Asteroids]
+
+[Bullet]
+
+[Enemy]
+
+[Player]
+}
+
+package "SPI's"{
+[CommonAsteroids] -[#purple]- SplitAsteroids
+[Asteroids] -[#purple]-> SplitAsteroids
+
+
+[CommonBullet] -[#purple]- BulletSPI
+[Bullet] -[#purple]-> BulletSPI
+
+[Common] -[#green]- IGamePluginService
+[Common] -[#blue]- IPostEntityProcessingService
+[Common] -[#red]- IEntityProcessingService
+[Collisions] --> IPostEntityProcessingService
+[Asteroids] -[#green]-> IGamePluginService
+[Asteroids] -[#red]-> IEntityProcessingService
+[Asteroids] -[#blue]-> IPostEntityProcessingService
+[Bullet] -[#green]-> IGamePluginService
+[Bullet] -[#red]-> IEntityProcessingService
+[Enemy] -[#green]-> IGamePluginService
+[Enemy] -[#red]-> IEntityProcessingService
+[Player] -[#green]-> IGamePluginService
+[Player] -[#red]-> IEntityProcessingService
+}
+
+[Collisions]
+
+[Core]
+
+[Plugins]
+
+@enduml
