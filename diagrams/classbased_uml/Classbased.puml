@@ -1,61 +1,212 @@
 @startuml
 'https://plantuml.com/class-diagram
-package asteroids{
-class AsteroidsControlSystem implements IEntityProcessingService, IPostEntityProcessingService
-class AsteroidsPlugin implements IGamePluginService
-class AsteroidsPostControlSystem implements IPostEntityProcessingService
-class AsteroidsSplitImpl implements SplitAsteroids
+
+class AsteroidsControlSystem implements IEntityProcessingService, IPostEntityProcessingService{
++ SplitAsteroids asteroidsSpitter;
++ void process(GameData gameData, World world);
++ void setAsteroidsSplitter(SplitAsteroids asteroidsSpitter);
++ void removeAsteroidsSplitter(SplitAsteroids asteroidsSpitter);
 }
 
-package bullet{
-class BulletControlSystem implements IEntityProcessingService, BulletSPI
-class BulletPlugin implements IGamePluginService
+class AsteroidsPlugin implements IGamePluginService{
+- Entity asteroids;
++ void start(GameData gameData, World world);
++ Entity createAsteroids(GameData gameData, Entity entity);
++ void stop(GameData gameData, World world);
 }
 
-package collisions{
-class Collisions implements IPostEntityProcessingService
+class AsteroidsPostControlSystem implements IPostEntityProcessingService{
++ SplitAsteroids asteroidsSplitter;
++ void setAsteroidsSplitter(SplitAsteroids asteroidsSplitter);
++ void removeAsteroidsSplitter(SplitAsteroids asteroidsSplitter);
 }
 
-package common{
-class Entity implements Serializable
-class GameData
-class GameKeys
-class World
-interface IEntityProcessingService
-interface IGamePluginService
-interface IPostEntityProcessingService
+class AsteroidsSplitImpl implements SplitAsteroids{
++ void createSplitAsteroid(IEntity entity, World world, GameData gameData);
 }
 
-package commonasteroids{
-class Asteroids extends Entity
-interface SplitAsteroids
+class BulletControlSystem implements IEntityProcessingService, BulletSPI{
++ void process(GameData gameData, World world);
++ Entity createBullet(Entity shooter, GameData gameData);
+- void setShape(IEntity entity);
 }
 
-package commonbullet{
-class Bullet extends Entity
-interface BulletSPI
+class BulletPlugin implements IGamePluginService{
+- Entity bullet;
++ void start(GameData gameData, World world);
++ void stop(GameData gameData, World world);
 }
 
-package core{
-class Game
-class HelperClass
-class Main extends Application
+class Collisions implements IPostEntityProcessingService{
++ void process(GameData gameData, World world);
++ Boolean collides(Entity entity1, Entity entity2);
 }
 
-package enemy{
-class Enemy extends Entity
-class EnemyControlSystem implements IEntityProcessingService
-class EnemyPlugin implements IGamePluginService
+
+class Entity implements Serializable{
+- final UUID ID = UUID.randomUUID();
+- double size;
+- boolean death;
+- double[] polygonCoordinates;
+- double x;
+- double y;
+- double rotation;
+- double objectiveX;
+- double objectiveY;
+- Paint color;
++ String getID();
++ void setPolygonCoordinates(double... coordinates);
++ double[] getPolygonCoordinates();
++ void setX(double x);
++ double getX();
++ void setY(double y);
++ double getY();
++ void setRotation(double rotation);
++ double getRotation();
++ double getobjectiveX();
++ double getobjectiveY();
++ void setObjectiveX(double objectiveX);
++ void setObjectiveY(double objectiveY);
++ void setColor(Paint color);
++ Paint getColor();
++ void setSize(double size);
++ double getSize();
++ void setDeath(boolean death);
++ boolean getDeath();
++ void setRadius(double radius);
++ double getRadius();
 }
 
-package player{
-class Player extends Entity
-class PlayerControlSystem implements IEntityProcessingService
-class PlayerPlugin implements IGamePluginService
+class GameData{
+- int displayWidth;
+- int displayHeight;
+- final GameKeys keys;
++ GameKeys getKeys();
++ void setDisplayWidth(int width);
++ int getDisplayWidth();
++ void setDisplayHeight(int height);
++ int getDisplayHeight();
 }
 
-package plugins{
-class EntityControlSystem implements IEntityProcessingService
+class GameKeys{
+- static boolean[] keys;
+- static boolean[] pkeys;
+- static final int NUM_KEYS;
++ static final int UP;
++ static final int DOWN;
++ static final int LEFT;
++ static final int RIGHT;
++ static final int SPACE;
++ void update();
++ void setKey(int k, boolean b);
++ boolean isDown(int k);
++ boolean isPressed(int k);
 }
+
+class World{
+- final Map<String, Entity> entityMap;
++ void removeEntity(String entityID);
++ void removeEntity(Entity entity);
++ Collection<Entity> getEntities();
++ <Entity extends Entity> List<Entity> getEntities(Class<E>... entityTypes);
++ Entity getEntity(String ID);
+}
+
+interface IEntityProcessingService{
++ void process(GameData gameData, World world);
+}
+interface IGamePluginService{
++ void start(GameData gameData, World world);
++ void stop(GameData gameData, World world);
+}
+
+interface IPostEntityProcessingService{
++ void process(GameData gameData, World world);
+}
+
+class Asteroids extends Entity{
+
+}
+
+interface SplitAsteroids{
++ void createSplitAsteroid(Entity entity, World world, GameData gameData);
+}
+
+class Bullet extends Entity{
+}
+
+interface BulletSPI{
++ Entity createBullet(Entity e, GameData gameData);
+}
+
+class Game{
+- final GameData gameData = new GameData();
+- final World world = new World();
+- final Map<Entity, Polygon> polygons = new ConcurrentHashMap<>();
+- final Pane gameWindow = new Pane();
+- final List<IEntityProcessingService> iEntityProcessingService;
+- final List<IPostEntityProcessingService> iPostEntityProcessingService;
+- final List<IGamePluginService> iGamePluginService;
++ Game(List<IEntityProcessingService> iEntityProcessingService, List<IPostEntityProcessingService> iPostEntityProcessingService, List<IGamePluginService> iGamePluginService);
++ void start(Stage window);
++ void render();
+- void update();
+- void draw();
++ List<IGamePluginService> getPluginServices();
++ List<IEntityProcessingService> getEntityProcessingServices();
++ List<IPostEntityProcessingService> getPostEntityProcessingServices();
+}
+
+class HelperClass{
++ HelperClass();
++ Game game();
++ static List<IGamePluginService> getPluginServices();
++ static List<IEntityProcessingService> getEntityProcessingServices();
++ static List<IPostEntityProcessingService> getPostEntityProcessingServices();
+}
+
+class Main extends Application{
++ static void main(String[] args);
++ void start(Stage window);
+}
+
+class Enemy extends Entity{
+}
+
+class EnemyControlSystem implements IEntityProcessingService{
++ void process(GameData gameData, World world);
+- Collection<? extends BulletSPI> getBulletSPIs();
+}
+
+class EnemyPlugin implements IGamePluginService{
+- Entity enemy;
++ EnemyPlugin();
++ void start(GameData gameData, World world);
+- Entity createEnemy(GameData gameData);
++ void stop(GameData gameData, World world);
+}
+
+class Player extends Entity{
+}
+
+class PlayerControlSystem implements IEntityProcessingService{
++ void process(GameData gameData, World world);
+- Collection<? extends BulletSPI> getBulletSPIs();
+}
+
+class PlayerPlugin implements IGamePluginService{
+- Entity player;
+- boolean death;
++ PlayerPlugin();
++ void start(GameData gameData, World world);
+- Entity createPlayerShip(GameData gameData);
++ void stop(GameData gameData, World world);
+}
+
+
+class EntityControlSystem implements IEntityProcessingService{
++ void process(GameData gameData, World world);
+}
+
 
 @enduml
