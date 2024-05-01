@@ -1,0 +1,28 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class AsteroidsControlSystem implements IEntityProcessingService, IPostEntityProcessingService{
++ SplitAsteroids asteroidsSpitter;
++ void process(GameData gameData, World world);
++ void setAsteroidsSplitter(SplitAsteroids asteroidsSpitter);
++ void removeAsteroidsSplitter(SplitAsteroids asteroidsSpitter);
+}
+
+class AsteroidsPlugin implements IGamePluginService{
+- Entity asteroids;
++ void start(GameData gameData, World world);
++ Entity createAsteroids(GameData gameData, Entity entity);
++ void stop(GameData gameData, World world);
+}
+
+class AsteroidsPostControlSystem implements IPostEntityProcessingService{
++ SplitAsteroids asteroidsSplitter;
++ void setAsteroidsSplitter(SplitAsteroids asteroidsSplitter);
++ void removeAsteroidsSplitter(SplitAsteroids asteroidsSplitter);
+}
+
+class AsteroidsSplitImpl implements SplitAsteroids{
++ void createSplitAsteroid(IEntity entity, World world, GameData gameData);
+}
+
+@enduml

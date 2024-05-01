@@ -1,0 +1,85 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class Entity implements Serializable{
+- final UUID ID = UUID.randomUUID();
+- double size;
+- boolean death;
+- double[] polygonCoordinates;
+- double x;
+- double y;
+- double rotation;
+- double objectiveX;
+- double objectiveY;
+- Paint color;
++ String getID();
++ void setPolygonCoordinates(double... coordinates);
++ double[] getPolygonCoordinates();
++ void setX(double x);
++ double getX();
++ void setY(double y);
++ double getY();
++ void setRotation(double rotation);
++ double getRotation();
++ double getobjectiveX();
++ double getobjectiveY();
++ void setObjectiveX(double objectiveX);
++ void setObjectiveY(double objectiveY);
++ void setColor(Paint color);
++ Paint getColor();
++ void setSize(double size);
++ double getSize();
++ void setDeath(boolean death);
++ boolean getDeath();
++ void setRadius(double radius);
++ double getRadius();
+}
+
+class GameData{
+- int displayWidth;
+- int displayHeight;
+- final GameKeys keys;
++ GameKeys getKeys();
++ void setDisplayWidth(int width);
++ int getDisplayWidth();
++ void setDisplayHeight(int height);
++ int getDisplayHeight();
+}
+
+class GameKeys{
+- static boolean[] keys;
+- static boolean[] pkeys;
+- static final int NUM_KEYS;
++ static final int UP;
++ static final int DOWN;
++ static final int LEFT;
++ static final int RIGHT;
++ static final int SPACE;
++ void update();
++ void setKey(int k, boolean b);
++ boolean isDown(int k);
++ boolean isPressed(int k);
+}
+
+class World{
+- final Map<String, Entity> entityMap;
++ void removeEntity(String entityID);
++ void removeEntity(Entity entity);
++ Collection<Entity> getEntities();
++ <Entity extends Entity> List<Entity> getEntities(Class<E>... entityTypes);
++ Entity getEntity(String ID);
+}
+
+interface IEntityProcessingService{
++ void process(GameData gameData, World world);
+}
+interface IGamePluginService{
++ void start(GameData gameData, World world);
++ void stop(GameData gameData, World world);
+}
+
+interface IPostEntityProcessingService{
++ void process(GameData gameData, World world);
+}
+
+@enduml

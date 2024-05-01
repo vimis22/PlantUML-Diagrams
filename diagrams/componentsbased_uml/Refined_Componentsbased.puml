@@ -1,23 +1,28 @@
 @startuml
 'https://plantuml.com/component-diagram
 
-[Core] --( IGamePluginService
-[Core] --( IEntityProcessingService
-[Core] --( IPostEntityProcessingService
+[Core] -[#red]-( IGamePluginService
+[Core] -[#blue]-( IEntityProcessingService
+[Core] -[#green]-( IPostEntityProcessingService
 
-[Plugins]
+[Asteroids] -[#red]- IGamePluginService
+[Asteroids] -[#blue]- IEntityProcessingService
+[Asteroids] -[#green]- IPostEntityProcessingService
+[Asteroids] -[#purple]- SplitAsteroids
 
-[Asteroids] -- IEntityProcessingService
-[Asteroids] -- IPostEntityProcessingService
-[Asteroids] -- IGamePluginService
-[Asteroids] -- SplitAsteroids
+[Bullet] -[#red]- IGamePluginService
+[Bullet] -[#blue]- IEntityProcessingService
+[Bullet] -[#purple]- BulletSPI
 
-[Enemy] -- IEntityProcessingService
-[Enemy] -- IGamePluginService
-[Player] -- IEntityProcessingService
-[Player] -- IGamePluginService
+[Enemy] -[#red]- IGamePluginService
+[Enemy] -[#blue]- IEntityProcessingService
 
+[Player] -[#red]- IGamePluginService
+[Player] -[#blue]- IEntityProcessingService
+
+[Collisions] -[#green]- IPostEntityProcessingService
 
 @enduml
+
 //Husk, at lave små UML Klassediagrammer for hvert modul.
 //Derefter lav et pakkestruktur, hvor du skaber inheritance mellem dem.

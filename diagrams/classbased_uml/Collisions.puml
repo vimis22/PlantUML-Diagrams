@@ -1,0 +1,9 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class Collisions implements IPostEntityProcessingService{
++ void process(GameData gameData, World world);
++ Boolean collides(Entity entity1, Entity entity2);
+}
+
+@enduml

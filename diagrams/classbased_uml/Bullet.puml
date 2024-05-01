@@ -1,0 +1,16 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class BulletControlSystem implements IEntityProcessingService, BulletSPI{
++ void process(GameData gameData, World world);
++ Entity createBullet(Entity shooter, GameData gameData);
+- void setShape(IEntity entity);
+}
+
+class BulletPlugin implements IGamePluginService{
+- Entity bullet;
++ void start(GameData gameData, World world);
++ void stop(GameData gameData, World world);
+}
+
+@enduml

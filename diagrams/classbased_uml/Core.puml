@@ -1,0 +1,35 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class Game{
+- final GameData gameData = new GameData();
+- final World world = new World();
+- final Map<Entity, Polygon> polygons = new ConcurrentHashMap<>();
+- final Pane gameWindow = new Pane();
+- final List<IEntityProcessingService> iEntityProcessingService;
+- final List<IPostEntityProcessingService> iPostEntityProcessingService;
+- final List<IGamePluginService> iGamePluginService;
++ Game(List<IEntityProcessingService> iEntityProcessingService, List<IPostEntityProcessingService> iPostEntityProcessingService, List<IGamePluginService> iGamePluginService);
++ void start(Stage window);
++ void render();
+- void update();
+- void draw();
++ List<IGamePluginService> getPluginServices();
++ List<IEntityProcessingService> getEntityProcessingServices();
++ List<IPostEntityProcessingService> getPostEntityProcessingServices();
+}
+
+class HelperClass{
++ HelperClass();
++ Game game();
++ static List<IGamePluginService> getPluginServices();
++ static List<IEntityProcessingService> getEntityProcessingServices();
++ static List<IPostEntityProcessingService> getPostEntityProcessingServices();
+}
+
+class Main extends Application{
++ static void main(String[] args);
++ void start(Stage window);
+}
+
+@enduml

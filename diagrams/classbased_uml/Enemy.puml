@@ -1,0 +1,20 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class Enemy extends Entity{
+}
+
+class EnemyControlSystem implements IEntityProcessingService{
++ void process(GameData gameData, World world);
+- Collection<? extends BulletSPI> getBulletSPIs();
+}
+
+class EnemyPlugin implements IGamePluginService{
+- Entity enemy;
++ EnemyPlugin();
++ void start(GameData gameData, World world);
+- Entity createEnemy(GameData gameData);
++ void stop(GameData gameData, World world);
+}
+
+@enduml

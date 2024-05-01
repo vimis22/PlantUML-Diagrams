@@ -1,0 +1,12 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class Asteroids extends Entity{
+
+}
+
+interface SplitAsteroids{
++ void createSplitAsteroid(Entity entity, World world, GameData gameData);
+}
+
+@enduml
