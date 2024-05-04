@@ -1,0 +1,27 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+actor User
+
+User --> Core : Start Program
+activate Core
+
+Core --> Enemy : Loads the Enemy
+activate Enemy
+
+Enemy --> Bullet : Enemy shoots
+deactivate Enemy
+activate Bullet
+
+Bullet --> Collision : Collision happens, when enemy moves in Targeted Direction
+activate Collision
+Collision --> Bullet :setDeath on Bullet, if Enemy is shot/collides
+deactivate Bullet
+
+Other_Entities --> Collision : Enemy or Asteroids is shot/collides
+activate Other_Entities
+Collision --> Other_Entities : setDeath on Player or Asteroids
+deactivate Other_Entities
+
+
+@enduml
