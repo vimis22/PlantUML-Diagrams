@@ -147,7 +147,7 @@ class Game{
 - final List<IEntityProcessingService> iEntityProcessingService;
 - final List<IPostEntityProcessingService> iPostEntityProcessingService;
 - final List<IGamePluginService> iGamePluginService;
-+ Game(List<IEntityProcessingService> iEntityProcessingService, List<IPostEntityProcessingService> iPostEntityProcessingService, List<IGamePluginService> iGamePluginService);
++ Game(List<IEntityProcessingService> iEntityProcessingService...);
 + void start(Stage window);
 + void render();
 - void update();

@@ -1,6 +1,22 @@
 @startuml
 'https://plantuml.com/class-diagram
 
+interface IEntityProcessingService{
++ void process(GameData gameData, World world);
+}
+interface IGamePluginService{
++ void start(GameData gameData, World world);
++ void stop(GameData gameData, World world);
+}
+
+interface IPostEntityProcessingService{
++ void process(GameData gameData, World world);
+}
+
+interface SplitAsteroids{
++ void createSplitAsteroid(Entity entity, World world, GameData gameData);
+}
+
 class AsteroidsControlSystem implements IEntityProcessingService, IPostEntityProcessingService{
 + SplitAsteroids asteroidsSpitter;
 + void process(GameData gameData, World world);
