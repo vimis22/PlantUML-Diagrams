@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="78bc056b-ec4e-4b44-9c6d-bddbaf12b94b" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/hcsd_diagrams/bilka_sequencediagrams.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diagrams/classbased_uml/Asteroids.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_classdiagrams/Asteroids.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diagrams/classbased_uml/Bullet.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_classdiagrams/Bullet.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diagrams/classbased_uml/Classbased.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_classdiagrams/Classbased.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diagrams/classbased_uml/Collisions.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_classdiagrams/Collisions.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diagrams/classbased_uml/Common.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_classdiagrams/Common.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diagrams/classbased_uml/CommonAsteroids.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_classdiagrams/CommonAsteroids.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diagrams/classbased_uml/CommonBullet.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_classdiagrams/CommonBullet.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diagrams/classbased_uml/Core.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_classdiagrams/Core.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diagrams/classbased_uml/Enemy.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_classdiagrams/Enemy.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diagrams/classbased_uml/Example_Classbased.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_classdiagrams/Example_Classbased.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diagrams/classbased_uml/Player.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_classdiagrams/Player.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diagrams/classbased_uml/Plugins.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_classdiagrams/Plugins.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diagrams/componentsbased_uml/Componentsbased.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_componentdiagrams/Componentsbased.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diagrams/componentsbased_uml/Example_Componentsbased.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_componentdiagrams/Example_Componentsbased.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diagrams/componentsbased_uml/Refined_Componentsbased.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_componentdiagrams/Refined_Componentsbased.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diagrams/sequencebased_uml/Asteroids_Creation.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_sequencediagrams/Asteroids_Creation.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diagrams/sequencebased_uml/Asteroids_Splitted.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_sequencediagrams/Asteroids_Splitted.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diagrams/sequencebased_uml/Enemy_Creation.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_sequencediagrams/Enemy_Creation.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diagrams/sequencebased_uml/Entities_Collision.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_sequencediagrams/Entities_Collision.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diagrams/sequencebased_uml/Example_Sequencebased.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_sequencediagrams/Example_Sequencebased.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diagrams/sequencebased_uml/Player_Creation.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_sequencediagrams/Player_Creation.puml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="UML Activity" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "vimis22"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/vimis22/PlantUML-Diagrams.git",
+    "accountId": "95d65915-72c1-45db-9675-ba5f662e1099"
+  }
+}]]></component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 2
+}]]></component>
+  <component name="ProjectId" id="2oM0ixfHMgmnwgCBxEBjQbFdZsU" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultPlantUmlFileTemplate": "UML Activity",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "hcsd__diagrams",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/vivek/Downloads/School_Projects/PlantUML-Diagrams",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-28b599e66164-intellij.indexing.shared.core-IU-242.23339.11" />
+        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-IU-242.23339.11" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="78bc056b-ec4e-4b44-9c6d-bddbaf12b94b" name="Changes" comment="" />
+      <created>1730664268075</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1730664268075</updated>
+      <workItem from="1730664269132" duration="952000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
