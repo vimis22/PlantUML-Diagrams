@@ -5,38 +5,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="78bc056b-ec4e-4b44-9c6d-bddbaf12b94b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/hcsd_diagrams/bilka_sequencediagrams.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/classbased_uml/Asteroids.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_classdiagrams/Asteroids.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/classbased_uml/Bullet.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_classdiagrams/Bullet.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/classbased_uml/Classbased.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_classdiagrams/Classbased.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/classbased_uml/Collisions.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_classdiagrams/Collisions.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/classbased_uml/Common.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_classdiagrams/Common.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/classbased_uml/CommonAsteroids.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_classdiagrams/CommonAsteroids.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/classbased_uml/CommonBullet.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_classdiagrams/CommonBullet.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/classbased_uml/Core.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_classdiagrams/Core.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/classbased_uml/Enemy.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_classdiagrams/Enemy.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/classbased_uml/Example_Classbased.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_classdiagrams/Example_Classbased.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/classbased_uml/Player.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_classdiagrams/Player.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/classbased_uml/Plugins.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_classdiagrams/Plugins.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/componentsbased_uml/Componentsbased.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_componentdiagrams/Componentsbased.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/componentsbased_uml/Example_Componentsbased.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_componentdiagrams/Example_Componentsbased.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/componentsbased_uml/Refined_Componentsbased.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_componentdiagrams/Refined_Componentsbased.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/sequencebased_uml/Asteroids_Creation.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_sequencediagrams/Asteroids_Creation.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/sequencebased_uml/Asteroids_Splitted.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_sequencediagrams/Asteroids_Splitted.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/sequencebased_uml/Enemy_Creation.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_sequencediagrams/Enemy_Creation.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/sequencebased_uml/Entities_Collision.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_sequencediagrams/Entities_Collision.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/sequencebased_uml/Example_Sequencebased.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_sequencediagrams/Example_Sequencebased.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/sequencebased_uml/Player_Creation.puml" beforeDir="false" afterPath="$PROJECT_DIR$/componentsbased_asteroidsfx/asteroidsbased_sequencediagrams/Player_Creation.puml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/maintenace_diagrams/font_classdiagram.puml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vimis_diagrams/vimis_componentdiagram.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="ComposerSettings">
+    <execution />
+  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="UML Activity" />
+        <option value="UML Component" />
       </list>
     </option>
   </component>
@@ -48,46 +33,49 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "vimis22"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;vimis22&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/vimis22/PlantUML-Diagrams.git",
-    "accountId": "95d65915-72c1-45db-9675-ba5f662e1099"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/vimis22/PlantUML-Diagrams.git&quot;,
+    &quot;accountId&quot;: &quot;a1aa4c72-a189-4228-a2c2-70dfad114856&quot;
   }
-}]]></component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 2
-}]]></component>
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
   <component name="ProjectId" id="2oM0ixfHMgmnwgCBxEBjQbFdZsU" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultPlantUmlFileTemplate": "UML Activity",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "hcsd__diagrams",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/vivek/Downloads/School_Projects/PlantUML-Diagrams",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultPlantUmlFileTemplate&quot;: &quot;UML Component&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;maintenance__diagrams&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/vivek/Downloads/School_Projects/PlantUML-Diagrams&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-28b599e66164-intellij.indexing.shared.core-IU-242.23339.11" />
-        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-IU-242.23339.11" />
+        <option value="bundled-jdk-9823dce3aa75-fdfe4dae3a2d-intellij.indexing.shared.core-IU-243.22562.218" />
+        <option value="bundled-js-predefined-d6986cc7102b-deb605915726-JavaScript-IU-243.22562.218" />
       </set>
     </attachedChunks>
   </component>
@@ -100,6 +88,11 @@
       <option name="presentableId" value="Default" />
       <updated>1730664268075</updated>
       <workItem from="1730664269132" duration="952000" />
+      <workItem from="1731178836044" duration="22000" />
+      <workItem from="1731178858615" duration="123000" />
+      <workItem from="1731178998128" duration="3069000" />
+      <workItem from="1731264587439" duration="104000" />
+      <workItem from="1734913949073" duration="2253000" />
     </task>
     <servers />
   </component>
@@ -116,5 +109,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

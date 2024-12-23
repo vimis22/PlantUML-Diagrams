@@ -1,0 +1,55 @@
+@startuml
+'https://plantuml.com/component-diagram
+
+[Frontend]
+[DataManagement]
+[GeneralData]
+[MenuGenerator]
+[GeneralMenu]
+[PageManagement]
+[GeneralPage]
+[UserManagement]
+[GeneralUser]
+[PageGenerator]
+[CommunicationsManagement]
+[GeneralCommunication]
+[TaskManagement]
+[GeneralTask]
+
+[Frontend] -[#blue]-> GeneralData
+[Frontend] -[#blue]-> GeneralMenu
+[Frontend] -[#blue]-> GeneralPage
+[Frontend] -[#blue]-> GeneralUser
+[Frontend] -[#blue]-> GeneralCommunication
+[Frontend] -[#blue]-> GeneralTask
+[PageGenerator] -[#blue]-> GeneralData
+[PageManagement] -[#blue]-> GeneralData
+[MenuGenerator] -[#blue]-> GeneralData
+[MenuGenerator] -[#blue]-> GeneralUser
+[CommunicationsManagement] -[#blue]-> GeneralUser
+[TaskManagement] -[#blue]-> GeneralData
+[CommunicationsManagement] -[#blue]-> GeneralData
+[UserManagement] -[#blue]-> GeneralData
+[PageManagement] -[#blue]-> GeneralUser
+
+GeneralData -[#red]-( GD
+[DataManagement] -[#green]- GD
+
+GeneralMenu -[#red]-( GM
+[MenuGenerator] -[#green]- GM
+
+GeneralPage -[#red]-( GP
+GeneralPage -[#red]-( PG
+[PageManagement] -[#green]- GP
+[PageGenerator] -[#green]- PG
+
+GeneralUser -[#red]-( GU
+[UserManagement] -[#green]- GU
+
+GeneralCommunication -[#red]-( GC
+[CommunicationsManagement] -[#green]- GC
+
+GeneralTask -[#red]-( GT
+[TaskManagement] -[#green]- GT
+
+@enduml

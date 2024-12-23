@@ -1,0 +1,18 @@
+@startuml
+interface FontChooserModel{
+  + boolean isEditable(MutableTreeNode node);
+}
+
+abstract class AbstractFontChooserModel implements FontChooserModel{
+- EventListenerList listenerList = new EventListenerList();
++ void addTreeModelListener(TreeModelListener l);
++ void removeTreeModelListener(TreeModelListener l);
++ TreeModelListener[] getTreeModelListeners();
+- void fireTreeNodesChanged(Object source, Object[] path, int[] childIndices, Object[] children);
+- void fireTreeNodesInserted(Object source, Object[] path, int[] childIndices, Object[] children);
+- void fireTreeNodesRemoved(Object source, Object[] path, int[] childIndices, Object[] children);
+- void fireTreeStructureChanged(Object source, Object[] path, int[] childIndices, Object[] children);
++ <T extends EventListener> T[] getListeners(Class<T> listenerType);
+}
+
+@enduml
