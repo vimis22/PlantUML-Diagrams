@@ -5,9 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="78bc056b-ec4e-4b44-9c6d-bddbaf12b94b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/maintenace_diagrams/font_classdiagram.puml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vimis_diagrams/vimis_componentdiagram.puml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/maintenace_diagrams/font_classdiagram.puml" beforeDir="false" afterPath="$PROJECT_DIR$/maintenace_diagrams/font_classdiagram.puml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,7 +91,8 @@
       <workItem from="1731178858615" duration="123000" />
       <workItem from="1731178998128" duration="3069000" />
       <workItem from="1731264587439" duration="104000" />
-      <workItem from="1734913949073" duration="2253000" />
+      <workItem from="1734913949073" duration="2321000" />
+      <workItem from="1735736170267" duration="2329000" />
     </task>
     <servers />
   </component>

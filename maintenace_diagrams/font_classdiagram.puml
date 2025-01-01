@@ -1,18 +1,60 @@
 @startuml
-interface FontChooserModel{
+
+interface Cloneable {
+}
+
+interface Serializable {
+}
+
+abstract class JComponent extends Container implements Serializable {
+}
+
+interface FontChooserModel {
   + boolean isEditable(MutableTreeNode node);
 }
 
-abstract class AbstractFontChooserModel implements FontChooserModel{
-- EventListenerList listenerList = new EventListenerList();
-+ void addTreeModelListener(TreeModelListener l);
-+ void removeTreeModelListener(TreeModelListener l);
-+ TreeModelListener[] getTreeModelListeners();
-- void fireTreeNodesChanged(Object source, Object[] path, int[] childIndices, Object[] children);
-- void fireTreeNodesInserted(Object source, Object[] path, int[] childIndices, Object[] children);
-- void fireTreeNodesRemoved(Object source, Object[] path, int[] childIndices, Object[] children);
-- void fireTreeStructureChanged(Object source, Object[] path, int[] childIndices, Object[] children);
-+ <T extends EventListener> T[] getListeners(Class<T> listenerType);
+interface Comparable<T> {
+  + int compareTo(T o);
+}
+
+interface TreeNode {
+  + TreeNode getChildAt(int childIndex);
+  + int getChildCount();
+  + TreeNode getParent();
+  + int getIndex(TreeNode node);
+  + boolean getAllowsChildren();
+  + boolean isLeaf();
+  + Enumeration<? extends TreeNode> children();
+}
+
+interface MutableTreeNode extends TreeNode {
+}
+
+abstract class AbstractFontChooserModel implements FontChooserModel {
+  - EventListenerList listenerList = new EventListenerList();
+  + void addTreeModelListener(TreeModelListener l);
+  + void removeTreeModelListener(TreeModelListener l);
+  + TreeModelListener[] getTreeModelListeners();
+  - void fireTreeNodesChanged(Object source, Object[] path, int[] childIndices, Object[] children);
+  - void fireTreeNodesInserted(Object source, Object[] path, int[] childIndices, Object[] children);
+  - void fireTreeNodesRemoved(Object source, Object[] path, int[] childIndices, Object[] children);
+  - void fireTreeStructureChanged(Object source, Object[] path, int[] childIndices, Object[] children);
+  + <T extends EventListener> T[] getListeners(Class<T> listenerType);
+}
+
+class DefaultFontChooserModel extends AbstractFontChooserModel {
+}
+
+class FontCollectionNode implements MutableTreeNode, Cloneable {
+}
+
+class FontFaceNode implements MutableTreeNode, Cloneable {
+}
+
+class FontFamilyNode implements MutableTreeNode, Cloneable {
+}
+
+class JFontChooser extends JComponent {
 }
 
 @enduml
