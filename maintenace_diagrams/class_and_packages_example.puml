@@ -1,0 +1,33 @@
+@startuml
+interface Cloneable {
+}
+
+interface Serializable {
+}
+
+abstract class JComponent extends Container implements Serializable {
+}
+
+interface FontChooserModel {
+  + boolean isEditable(MutableTreeNode node);
+}
+
+interface Comparable<T> {
+  + int compareTo(T o);
+}
+
+interface TreeNode {
+  + TreeNode getChildAt(int childIndex);
+  + int getChildCount();
+  + TreeNode getParent();
+  + int getIndex(TreeNode node);
+  + boolean getAllowsChildren();
+  + boolean isLeaf();
+  + Enumeration<? extends TreeNode> children();
+}
+
+interface MutableTreeNode extends TreeNode {
+}
+
+
+@enduml
