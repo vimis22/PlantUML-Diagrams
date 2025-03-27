@@ -1,0 +1,81 @@
+@startuml
+skinparam rectangle {
+  BackgroundColor LightBlue
+  BorderColor Black
+}
+
+rectangle "E-Slim Tablet x-13 Prototype" as Prototype
+
+rectangle "Hardware" as Hardware
+rectangle "CPU" as CPU
+rectangle "More items" as MoreItems
+
+Prototype --> Hardware
+Prototype --> CPU
+Prototype --> MoreItems
+
+rectangle "Power Supply" as PowerSupply
+rectangle "Charger" as Charger
+rectangle "Battery" as Battery
+
+Hardware --> PowerSupply
+Hardware --> Charger
+PowerSupply --> Battery
+
+rectangle "Frame" as Frame
+rectangle "Cameras" as Cameras
+rectangle "Speakers" as Speakers
+rectangle "Antenna" as Antenna
+
+Battery --> Frame
+Battery --> Cameras
+Battery --> Speakers
+Battery --> Antenna
+
+Frame --> "WP-F1"
+Cameras --> "WP-C1"
+Cameras --> "WP-C2"
+Cameras --> "WP-C3"
+Cameras --> "WP-C4"
+Speakers --> "WP-S1"
+Antenna --> "WP-A1"
+Antenna --> "WP-A2"
+Antenna --> "WP-A3"
+
+rectangle "Flash ROM" as FlashROM
+CPU --> FlashROM
+
+rectangle "I/O Controller" as IOController
+CPU --> IOController
+
+rectangle "USB Slots" as USBSlots
+rectangle "Internet" as Internet
+rectangle "Touch Screen" as TouchScreen
+
+IOController -down-> USBSlots
+IOController -down-> Internet
+IOController -down-> TouchScreen
+
+rectangle "Keyboard" as Keyboard
+rectangle "Touch Sensors" as TouchSensors
+rectangle "Back Light" as BackLight
+rectangle "Resolution" as Resolution
+
+TouchScreen -down-> Keyboard
+TouchScreen -down-> TouchSensors
+TouchScreen -down-> BackLight
+TouchScreen -down-> Resolution
+
+Keyboard --> "WP-K1"
+TouchSensors --> "WP-TS1"
+TouchSensors --> "WP-TS2"
+TouchSensors --> "WP-TS3"
+BackLight --> "WP-L1"
+BackLight --> "WP-L2"
+BackLight --> "WP-L3"
+Resolution --> "WP-R1"
+Resolution --> "WP-R2"
+Resolution --> "WP-R3"
+
+@enduml
+

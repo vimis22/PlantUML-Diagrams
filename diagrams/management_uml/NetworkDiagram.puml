@@ -1,0 +1,32 @@
+@startuml
+
+skinparam rectangle {
+    BackgroundColor #F5F5F5
+    BorderColor Black
+    BorderThickness 1
+}
+
+' Definer elementerne
+rectangle "A\nDefine Requirements" as A
+rectangle "B\nAssign Team" as B
+rectangle "C\nDesign Hardware" as C
+rectangle "D\nCode Software" as D
+rectangle "E\nBuild & Test Hardware" as E
+rectangle "F\nDevelop Patent Request" as F
+rectangle "G\nTest Software" as G
+rectangle "H\nIntegrate Systems" as H
+
+' Tilføj oval til systembeskrivelse
+cloud "Automated Warehouse\nOrder Picking System" as system
+
+' Definer forbindelser mellem elementerne
+A --> B
+A --> C
+B --> D
+C --> E
+D --> G
+E --> H
+G --> H
+F --> H
+
+@enduml

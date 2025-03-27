@@ -1,0 +1,94 @@
+@startuml
+
+interface EventListener{
+}
+
+interface Cloneable {
+}
+
+interface Serializable {
+}
+
+abstract class JComponent extends Container implements Serializable {
+}
+
+interface FontChooserModel {
+  + boolean isEditable(MutableTreeNode node);
+}
+
+interface Comparable<T> {
+  + int compareTo(T o);
+}
+
+interface TreeNode {
+  + TreeNode getChildAt(int childIndex);
+  + int getChildCount();
+  + TreeNode getParent();
+  + int getIndex(TreeNode node);
+  + boolean getAllowsChildren();
+  + boolean isLeaf();
+  + Enumeration<? extends TreeNode> children();
+}
+
+interface MutableTreeNode extends TreeNode {
+}
+
+interface FontChooserModel extends TreeNode{
++isEditable boolean (MutableTreeNode node);
+}
+
+interface TreeModelListener extends EventListener{
+void treeNodesChanged(TreeModelEvent e);
+void treeNodesInserted(TreemodelEvent e);
+void treeNodesRemoved(TreeModelEvent e);
+void treeStructureChanged(TreeModelEvent e);
+}
+
+package eventhandlers{
+    interface TreeEventNotifier{
+    +treevent void(TreeModelEvent event);
+    }
+
+    class NodeStructureTreeManager implements TreeEventNotifier{
+    }
+
+    class NodesRemovedTreeManager implements TreeEventNotifier{
+    }
+
+    class NodesInsertedTreeManager implements TreeEventNotifier{
+    }
+
+    class NodesChangedTreeManager implements TreeEventNotifier{
+    }
+}
+
+package listenernodes{
+    class NodesChangedInserted implements TreeModelListener{
+    }
+    class NodesChangedListener implements TreeModelListener{
+    }
+    class NodesChangedRemoved implements TreeModelListener{
+    }
+    class NodeChangedStructure implements TreeModelListener{
+    }
+}
+
+class ExperimentFontChooserModel{
+}
+
+class ExperimentDefaultChooserModel extends ExperimentFontChooserModel{
+}
+
+class FontCollectionNode implements MutableTreeNode, Cloneable {
+}
+
+class FontFaceNode implements MutableTreeNode, Cloneable {
+}
+
+class FontFamilyNode implements MutableTreeNode, Cloneable {
+}
+
+class JFontChooser extends JComponent {
+}
+
+@enduml

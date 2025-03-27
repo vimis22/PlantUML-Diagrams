@@ -6,7 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="78bc056b-ec4e-4b44-9c6d-bddbaf12b94b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/maintenace_diagrams/font_classdiagram.puml" beforeDir="false" afterPath="$PROJECT_DIR$/maintenace_diagrams/font_classdiagram.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diagrams/NetworkDiagram.puml" beforeDir="false" afterPath="$PROJECT_DIR$/diagrams/NetworkDiagram.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diagrams/WorkBreakdownStructure.puml" beforeDir="false" afterPath="$PROJECT_DIR$/diagrams/WorkBreakdownStructure.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/maintenace_diagrams/class_and_packages_example.puml" beforeDir="false" afterPath="$PROJECT_DIR$/maintenace_diagrams/class_and_packages_example.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/maintenace_diagrams/new_fontpalette_classdiagram.puml" beforeDir="false" afterPath="$PROJECT_DIR$/maintenace_diagrams/new_fontpalette_classdiagram.puml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,10 +60,10 @@
     &quot;DefaultPlantUmlFileTemplate&quot;: &quot;UML Component&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;maintenance__diagrams&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;management__diagrams&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/vivek/Downloads/School_Projects/PlantUML-Diagrams&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Projects/School_Projects/ElectroMart&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -73,8 +76,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-fdfe4dae3a2d-intellij.indexing.shared.core-IU-243.22562.218" />
-        <option value="bundled-js-predefined-d6986cc7102b-deb605915726-JavaScript-IU-243.22562.218" />
+        <option value="bundled-jdk-9823dce3aa75-125ca727e0f0-intellij.indexing.shared.core-IU-243.24978.46" />
+        <option value="bundled-js-predefined-d6986cc7102b-76f8388c3a79-JavaScript-IU-243.24978.46" />
       </set>
     </attachedChunks>
   </component>
@@ -92,7 +95,18 @@
       <workItem from="1731178998128" duration="3069000" />
       <workItem from="1731264587439" duration="104000" />
       <workItem from="1734913949073" duration="2321000" />
-      <workItem from="1735736170267" duration="2329000" />
+      <workItem from="1735736170267" duration="2683000" />
+      <workItem from="1736184550956" duration="1814000" />
+      <workItem from="1736198502672" duration="465000" />
+      <workItem from="1736199162960" duration="1805000" />
+      <workItem from="1736242930183" duration="16000" />
+      <workItem from="1742031512376" duration="134000" />
+      <workItem from="1742031672165" duration="386000" />
+      <workItem from="1742218441218" duration="3488000" />
+      <workItem from="1742290264575" duration="135000" />
+      <workItem from="1742320881363" duration="923000" />
+      <workItem from="1742324917234" duration="621000" />
+      <workItem from="1742409836978" duration="150000" />
     </task>
     <servers />
   </component>
