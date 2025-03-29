@@ -1,0 +1,56 @@
+@startuml
+
+package "Signup Section" {
+  rectangle SplashScreen as "Splash Screen"
+  rectangle Form_Filling as "Account Information"
+  rectangle Signup_Password as "Password"
+  rectangle Approve as "Confirmation Pending"
+  rectangle 2FA_Authentication as "Facial Recognition"
+  rectangle Validation as "Validation"
+  rectangle Notification as "Notification Enabling"
+  rectangle LoginScreen as "Login Screen"
+  rectangle ForgotPasswordScreen as "Forgot Password Screen"
+  rectangle Sent_Popup as "Sent Popup"
+  rectangle HomeScreen as "Home Screen"
+
+  SplashScreen --> LoginScreen
+}
+
+package "Completed Case Section" {
+  rectangle Home_Select_Property as "Select Property"
+  rectangle Information as "Information"
+  rectangle CompletedCase as "Completed Case"
+  rectangle CompletedCase_Edit as "Edit Case"
+  rectangle CompletedCase_Delete as "Delete Case"
+  rectangle CompletedCase_Chat as "Case Chat"
+}
+
+package "Case Section" {
+  rectangle CaseScreen as "Case Screen"
+  rectangle Emergency as "Emergency"
+  rectangle Emergency_Select_Employee as "Select Employee"
+  rectangle Call as "Call"
+  rectangle Process as "Process"
+  rectangle Case_Select_Property as "Select Property"
+  rectangle Description as "Description"
+  rectangle Image_Selection as "Select Image"
+  rectangle Case_Select_Employee as "Assign Employee"
+  rectangle Popup_Complete as "Completion Popup"
+}
+
+package "Settings Section" {
+  rectangle SettingsScreen as "Settings"
+  rectangle Terms_Conditions as "Terms & Conditions"
+  rectangle Data_Processing as "Data Processing"
+  rectangle ProfileScreen as "Profile"
+  rectangle ProfileScreen_Edit as "Edit Profile"
+  rectangle ProfileScreen_Save as "Save Profile"
+  rectangle Change_Password as "Change Password"
+  rectangle Select_Image as "Select Profile Image"
+  rectangle Add as "Add Info"
+  rectangle Password_Input as "Password Input"
+  rectangle Password_Change as "Confirm Password Change"
+  rectangle Logout as "Logout"
+}
+
+@enduml
