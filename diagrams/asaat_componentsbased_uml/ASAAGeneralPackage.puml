@@ -1,0 +1,21 @@
+@startuml
+
+package "Frontend" as Frontend
+package "API-Gateway" as APIGateway
+package "Orchestrator" as Orchestrator
+package "External-Service" as ExternalService
+package "BookScheduler_MQTT" as BookScheduler
+package "edge-mqtt" as EdgeMQTT
+
+Frontend --> APIGateway : HTTP/REST
+Frontend --> ExternalService : HTTP/REST (optional)
+
+APIGateway --> Orchestrator : Service calls
+APIGateway --> ExternalService : Direct API calls
+
+Orchestrator --> ExternalService : Business operations
+Orchestrator --> BookScheduler : Scheduling / messaging
+
+BookScheduler --> EdgeMQTT : MQTT communication
+
+@enduml

@@ -1,0 +1,41 @@
+@startuml
+title Job Pipeline State Machine (Book Lifecycle)
+hide empty description
+
+[*] --> Pending : Job Created in DB
+
+state "Parallel Production Phase" as Phase1 {
+    state "Printing Stage" as Printing {
+        [*] --> Print_Queued : Status: queued
+        Print_Queued --> Print_Running : Machine Assigned
+        Print_Running --> Print_Done : MQTT 'done'
+    }
+
+    state "Cover Stage" as Cover {
+        [*] --> Cover_Queued : Status: queued
+        Cover_Queued --> Cover_Running : Machine Assigned
+        Cover_Running --> Cover_Done : MQTT 'done'
+    }
+}
+
+Pending --> Phase1 : KickOffPendingJobs
+
+state "Synchronization Check" as Sync <<choice>>
+Phase1 --> Sync : Any Stage Completed
+Sync --> Binding_Queued : Printing=Done AND Cover=Done
+Sync --> Phase1 : Waiting for other stage
+
+state "Binding Phase" as Phase2 {
+    Binding_Queued --> Binding_Running : Binder Assigned
+    Binding_Running --> Binding_Done : MQTT 'done'
+}
+
+Phase2 --> Packaging_Queued : Binding Complete
+
+state "Packaging Phase" as Phase3 {
+    Packaging_Queued --> Packaging_Running : Packager Assigned
+    Packaging_Running --> Packaging_Done : MQTT 'done'
+}
+
+Packaging_Done --> [*] : Job Fully Processed
+@enduml
