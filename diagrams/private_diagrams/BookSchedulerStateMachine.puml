@@ -1,0 +1,123 @@
+@startuml BookScheduler_StateMachine
+
+skinparam state {
+  BackgroundColor<<parallel>> LightSkyBlue
+  BackgroundColor<<choice>> LightYellow
+}
+
+[*] --> Initializing : System Start
+
+Initializing : Entry: Load machines from DB\nEntry: Subscribe to MQTT topics\nAttributes: machineList[]
+
+Initializing --> AwaitingBooks : Initialization complete
+
+AwaitingBooks : Query pending books from DB\nAttributes: bookList[]
+
+AwaitingBooks --> CheckBookAvailability : Books found
+
+state CheckBookAvailability <<choice>>
+CheckBookAvailability --> AwaitingBooks : No books pending\n[Wait 5 seconds]
+CheckBookAvailability --> EnsureStages : Books pending
+
+EnsureStages : For each book:\nCreate stages: printing, cover, binding, packaging\nSet initial status: "queued"\nAttributes: bookId, stageList[]
+
+EnsureStages --> ParallelStageAssignment
+
+state ParallelStageAssignment {
+  [*] --> fork1
+
+  fork1 --> AssignPrinting
+  fork1 --> AssignCover
+
+  AssignPrinting : Check if stage status = "queued"
+  AssignPrinting : Query available printers (is_busy=false, is_up=true)
+  AssignPrinting : Attributes: bookId, machineId, stageId
+
+  AssignCover : Check if stage status = "queued"
+  AssignCover : Query available cover machines
+  AssignCover : Attributes: bookId, machineId, stageId
+
+  state CheckPrinterAvailable <<choice>>
+  AssignPrinting --> CheckPrinterAvailable
+  CheckPrinterAvailable --> ExecutePrinting : Printer available
+  CheckPrinterAvailable --> StayQueuedPrinting : No printer available
+
+  StayQueuedPrinting : Stage remains "queued"
+  StayQueuedPrinting --> join1
+
+  ExecutePrinting : Update stage status = "running"\nSet machine is_busy = true\nPublish MQTT command\nAttributes: bookId, machineId, progress=0
+  ExecutePrinting --> MonitorPrinting
+
+  MonitorPrinting : Receive progress updates\nUpdate stage progress in DB\nAttributes: progress (0-100)
+  MonitorPrinting --> PrintingDone : progress = 100
+
+  PrintingDone : Publish "done" event\nSet machine is_busy = false\nUpdate stage status = "done"
+  PrintingDone --> join1
+
+  state CheckCoverAvailable <<choice>>
+  AssignCover --> CheckCoverAvailable
+  CheckCoverAvailable --> ExecuteCover : Cover machine available
+  CheckCoverAvailable --> StayQueuedCover : No cover machine available
+
+  StayQueuedCover : Stage remains "queued"
+  StayQueuedCover --> join1
+
+  ExecuteCover : Update stage status = "running"\nSet machine is_busy = true\nPublish MQTT command\nAttributes: bookId, machineId, progress=0
+  ExecuteCover --> MonitorCover
+
+  MonitorCover : Receive progress updates\nUpdate stage progress in DB\nAttributes: progress (0-100)
+  MonitorCover --> CoverDone : progress = 100
+
+  CoverDone : Publish "done" event\nSet machine is_busy = false\nUpdate stage status = "done"
+  CoverDone --> join1
+
+  join1 --> [*]
+}
+
+ParallelStageAssignment --> CheckBothComplete
+
+state CheckBothComplete <<choice>>
+CheckBothComplete --> AwaitingCompletion : Printing or Cover not done\n[Continue monitoring]
+CheckBothComplete --> AssignBinding : Both Printing AND Cover done
+
+AwaitingCompletion : Listen for stage completion events\nAttributes: printingStatus, coverStatus
+AwaitingCompletion --> CheckBothComplete : Stage done event received
+
+AssignBinding : Query available binder machines\nCheck binding stage status = "queued"
+AssignBinding --> CheckBinderAvailable
+
+state CheckBinderAvailable <<choice>>
+CheckBinderAvailable --> ExecuteBinding : Binder available
+CheckBinderAvailable --> AwaitingCompletion : No binder available
+
+ExecuteBinding : Update stage status = "running"\nSet machine is_busy = true\nPublish MQTT command\nAttributes: bookId, machineId, progress=0
+
+ExecuteBinding --> MonitorBinding
+
+MonitorBinding : Receive progress updates\nUpdate stage progress in DB\nAttributes: progress (0-100)
+MonitorBinding --> BindingDone : progress = 100
+
+BindingDone : Publish "done" event\nSet machine is_busy = false\nUpdate stage status = "done"
+
+BindingDone --> AssignPackaging
+
+AssignPackaging : Query available packager machines\nCheck packaging stage status = "queued"
+
+AssignPackaging --> CheckPackagerAvailable
+
+state CheckPackagerAvailable <<choice>>
+CheckPackagerAvailable --> ExecutePackaging : Packager available
+CheckPackagerAvailable --> AwaitingCompletion : No packager available
+
+ExecutePackaging : Update stage status = "running"\nSet machine is_busy = true\nPublish MQTT command\nAttributes: bookId, machineId, progress=0
+
+ExecutePackaging --> MonitorPackaging
+
+MonitorPackaging : Receive progress updates\nUpdate stage progress in DB\nAttributes: progress (0-100)
+MonitorPackaging --> PackagingDone : progress = 100
+
+PackagingDone : Publish "done" event\nSet machine is_busy = false\nUpdate stage status = "done"\nLog: Book fully processed
+
+PackagingDone --> [*]
+
+@enduml

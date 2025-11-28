@@ -1,0 +1,91 @@
+@startuml
+title Requirement Diagram (Compatible Version)
+
+' ===============================
+' Functional Requirements
+' ===============================
+
+class FR_01 <<requirement>> {
+    id = "FR-01"
+    text = "Standardized Machine Registration"
+    risk = "Medium"
+    verify = "Inspection"
+}
+
+class FR_02 <<requirement>> {
+    id = "FR-02"
+    text = "Real-time Bidirectional Communication"
+    risk = "High"
+    verify = "Test"
+}
+
+class FR_03 <<requirement>> {
+    id = "FR-03"
+    text = "Live Status Dashboard"
+    risk = "Low"
+    verify = "Demonstration"
+}
+
+class FR_06 <<requirement>> {
+    id = "FR-06"
+    text = "Production Data Analysis"
+    risk = "Low"
+    verify = "Analysis"
+}
+
+' ===============================
+' Non-Functional Requirements
+' ===============================
+
+class NFR_01 <<requirement>> {
+    id = "NFR-01"
+    text = "Reliability (99.9% Uptime)"
+    risk = "High"
+    verify = "Analysis"
+}
+
+class NFR_02 <<requirement>> {
+    id = "NFR-02"
+    text = "Scalability (Horizontal Scaling)"
+    risk = "Medium"
+    verify = "Test"
+}
+
+' ===============================
+' System Components (elements)
+' ===============================
+
+class MachineAgent <<component>> {
+    docRef = "BookScheduler_MQTT/Machines"
+}
+
+class MqttBroker <<component>> {
+    docRef = "Mosquitto Docker Container"
+}
+
+class TimescaleDB <<database>> {
+    docRef = "edge-mqtt/timescale-data"
+}
+
+class FrontendUI <<component>> {
+    docRef = "External-Service React App"
+}
+
+class DockerInfrastructure <<node>> {
+    docRef = "docker-compose.yml"
+}
+
+' ===============================
+' Relationships (Satisfy / Refine)
+' ===============================
+
+MachineAgent --> FR_01 : satisfies
+MqttBroker --> FR_02 : satisfies
+FrontendUI --> FR_03 : satisfies
+TimescaleDB --> FR_06 : satisfies
+DockerInfrastructure --> NFR_02 : satisfies
+
+FR_02 --> NFR_01 : refines
+
+@enduml
+

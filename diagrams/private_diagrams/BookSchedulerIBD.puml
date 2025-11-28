@@ -1,242 +1,69 @@
 @startuml BookScheduler_IBD
-title Internal Block Diagram - BookScheduler Module
+title Internal Block Diagram - BookScheduler_MQTT Module
 
-' Styling
-skinparam packageStyle rectangle
+left to right direction
+
 skinparam component {
   BackgroundColor LightSteelBlue
   BorderColor Black
-  ArrowColor Black
+  FontSize 11
 }
 
-skinparam class {
+skinparam interface {
   BackgroundColor LightYellow
   BorderColor Black
-  ArrowColor Black
 }
 
-' Main BookScheduler Component
-package "BOOKSCHEDULER" <<component>> {
+package "BookScheduler_MQTT" <<component>> as BookScheduler {
 
-  ' Internal Packages/Blocks
-  package "Machines" <<block>> {
-    abstract class BaseMachine {
-      +Guid Id
-      +string Name
-      +string Type
-      #MqttClientService Mqtt
-      #DbHelper Db
-      --
-      +SendHeartbeatAsync()
-      +PublishProgressAsync()
-      +{abstract} HandleCommandsAsync()
-    }
+  component "Program\n(Entry Point)" <<block>> as Program
+  component "MachineManager\n(Orchestration)" <<block>> as MachineManager
+  component "BaseMachine\n(Abstract Base)" <<block>> as BaseMachine
+  component "Printer" <<block>> as Printer
+  component "Cover" <<block>> as Cover
+  component "Binder" <<block>> as Binder
+  component "Packager" <<block>> as Packager
+  component "DbHelper\n(Data Access)" <<block>> as DbHelper
+  component "MqttClientService\n(Messaging)" <<block>> as MqttClientService
 
-    class Printer <<concrete>> {
-      +int PagesPerMinute
-      --
-      +HandleCommandsAsync()
-      +PrintAsync()
-    }
+  ' Relationships within module
+  Program ..> DbHelper         : creates
+  Program ..> MqttClientService: creates
+  Program ..> MachineManager   : creates
 
-    class Cover <<concrete>> {
-      --
-      +HandleCommandsAsync()
-      -DoCoversAsync()
-    }
+  Program ..> Printer  : creates (local sim)
+  Program ..> Cover    : creates (local sim)
+  Program ..> Binder   : creates (local sim)
+  Program ..> Packager : creates (local sim)
 
-    class Binder <<concrete>> {
-      --
-      +HandleCommandsAsync()
-      -DoBindingAsync()
-    }
+  MachineManager ..> MqttClientService : uses (subscribe/publish)
+  MachineManager ..> DbHelper          : uses (queries/updates)
+  MachineManager ..> BaseMachine       : coordinates via MQTT (assigns jobs)
 
-    class Packager <<concrete>> {
-      --
-      +HandleCommandsAsync()
-      -DoPackagingAsync()
-    }
+  BaseMachine ..> MqttClientService : uses (heartbeat/progress)
+  BaseMachine ..> DbHelper          : uses (status/progress)
 
-    class MachineManager <<service>> {
-      -MqttClientService _mqtt
-      -DbHelper _db
-      -ConcurrentDictionary<Guid, BaseMachine> _localMachineInstances
-      --
-      +StartAsync()
-      -KickOffPendingJobsAsync()
-      -AssignStageIfQueuedAsync()
-      -TryAdvancePipelineAsync()
-    }
-
-    note right of MachineManager
-      Orchestrates machine lifecycle:
-      - Subscribes to MQTT topics
-      - Manages job assignment
-      - Coordinates pipeline stages
-    end note
-  }
-
-  package "Services" <<block>> {
-    class MqttClientService <<service>> {
-      -IMqttClient _mqttClient
-      --
-      +ConnectAsync()
-      +PublishAsync()
-      +SubscribeAsync()
-    }
-
-    class DbHelper <<repository>> {
-      -string _connString
-      --
-      +GetAllMachinesAsync()
-      +GetAvailableMachinesByTypeAsync()
-      +SetMachineBusyAsync()
-      +GetAllBooksAsync()
-      +GetBookStageAsync()
-      +AssignStageMachineAsync()
-      +UpdateStageProgressAsync()
-      +InsertJobEventAsync()
-    }
-
-    note right of DbHelper
-      Uses Dapper ORM
-      Connects to PostgreSQL
-      Provides data access layer
-    end note
-  }
-
-  package "Models" <<block>> {
-    class BookDto <<dto>> {
-      +Guid Id
-      +string Title
-      +int Copies
-      +int Pages
-      +DateTime CreatedAt
-    }
-
-    class BookStageDto <<dto>> {
-      +Guid Id
-      +Guid BookId
-      +string Stage
-      +string Status
-      +Guid? AssignedMachine
-      +int Progress
-      +DateTime UpdatedAt
-    }
-
-    class MachineDto <<dto>> {
-      +Guid Id
-      +string Name
-      +string Type
-      +int? PagesPerMin
-      +bool IsUp
-      +bool IsBusy
-      +DateTime? LastSeen
-      +string Metadata
-    }
-
-    note right of Models
-      Data Transfer Objects
-      Map to database tables:
-      - books
-      - book_stages
-      - machines
-    end note
-  }
-
-  package "Migrations" <<block>> {
-    class "001_init.sql" as InitMigration <<script>> {
-      Creates tables:
-      - machines
-      - books
-      - book_stages
-      - job_events
-    }
-
-    class "002_seed.sql" as SeedMigration <<script>> {
-      Seeds initial data
-    }
-  }
-
-  package "Core" <<block>> {
-    class Scheduler <<service>> {
-      -DbHelper _db
-      -MqttClientService _mqtt
-      --
-      +StartAsync()
-      -RunCycleAsync()
-    }
-
-    class Program <<entrypoint>> {
-      +Main()
-    }
-
-    note right of Program
-      Entry point:
-      - Initializes DbHelper
-      - Initializes MqttClientService
-      - Creates MachineManager
-      - Instantiates machine instances
-    end note
-  }
-
-  ' Inheritance relationships
-  Printer --|> BaseMachine : extends
-  Cover --|> BaseMachine : extends
-  Binder --|> BaseMachine : extends
+  Printer  --|> BaseMachine : extends
+  Cover    --|> BaseMachine : extends
+  Binder   --|> BaseMachine : extends
   Packager --|> BaseMachine : extends
-
-  ' Dependencies - Required interfaces (component requires interface)
-  MachineManager --c Services : requires DbHelper\nrequires MqttClientService
-  BaseMachine --c Services : requires DbHelper\nrequires MqttClientService
-  Scheduler --c Services : requires DbHelper\nrequires MqttClientService
-  Program --c Core : requires Scheduler
-  Program --c Machines : requires MachineManager
-
-  ' Dependencies - Provided interfaces (component provides interface)
-  Services --o Machines : provides data access\nprovides messaging
-  Models --o Services : provides DTOs
-  Migrations --o Services : provides schema
-
-  ' Communication flows
-  MachineManager ..> BaseMachine : manages instances
-  DbHelper ..> Models : returns DTOs
-  Program ..> BaseMachine : instantiates\n(Printer, Cover, Binder, Packager)
-
 }
 
-' External dependencies (outside BookScheduler)
-cloud "MQTT Broker" as MqttBroker {
-}
+cloud "MQTT Broker\n(Mosquitto)" as MQTT
+database "PostgreSQL\n(bookscheduler)" as DB
 
-database "PostgreSQL" as PostgresDB {
-  table machines
-  table books
-  table book_stages
-  table job_events
-}
+MqttClientService ..> MQTT : connects
+DbHelper ..> DB : queries
 
-' External connections
-MqttClientService --> MqttBroker : publishes/subscribes
-DbHelper --> PostgresDB : queries/updates
-
-' Legend
 legend right
-  **IBD Legend**
-  --o : Provided Interface (circle side provides)
-  --c : Required Interface (corner side requires)
-  --|> : Inheritance (extends/implements)
-  ..> : Usage dependency
+  Connection Types
+  ..>  : dependency (creates/uses/coordinates/connects/queries)
+  --|> : inheritance (extends)
 
-  **Stereotypes**
-  <<component>> : Main module
-  <<block>> : Internal package/group
-  <<service>> : Service class
-  <<repository>> : Data access layer
-  <<dto>> : Data Transfer Object
-  <<concrete>> : Concrete implementation
-  <<entrypoint>> : Application entry point
-  <<script>> : SQL migration script
+  Component Types
+  <<component>> : main module boundary
+  <<block>>     : internal component/package
 endlegend
 
 @enduml
+

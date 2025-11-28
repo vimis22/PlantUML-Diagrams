@@ -1,0 +1,12 @@
+@startuml
+'LoginScreen
+'Authentication
+'CRUD-Read
+
+LoginScreen -> Authentication: Credentials sent
+
+Authentication -> CRUD-Read
+
+
+
+@enduml

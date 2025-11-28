@@ -1,0 +1,370 @@
+@startuml API-Gateway-BDD
+!define BLOCK class
+!define INTERFACE interface
+
+title Block Definition Diagram (BDD) - API Gateway System
+
+skinparam componentStyle rectangle
+skinparam package {
+  BackgroundColor LightGray
+  BorderColor Black
+}
+
+
+package "API Gateway System" {
+  BLOCK APIGatewaySystem <<block>> {
+    {field} + serverPort: Integer = 8080
+    {field} + gatewayName: String = "api-gateway"
+    --
+    {field} Parts:
+    {field} • application: APIGatewayApplication [1]
+    {field} • config: ConfigurationLayer [1]
+    {field} • filter: FilterLayer [1]
+    {field} • web: WebLayer [1]
+    {field} • support: SupportLayer [1]
+  }
+}
+
+
+BLOCK APIGatewayApplication <<block>> {
+  --Operations--
+  + main(args: String[]): void
+  --Ports--
+  ○ provides: IApplicationBootstrap
+  ● requires: ISpringContext
+  ● requires: IConfigurationProvider
+}
+
+APIGatewaySystem *-- APIGatewayApplication
+
+
+package "Configuration Layer" {
+
+  BLOCK CorsConfig <<block>> {
+    --Values--
+    + allowedOrigins: List<String>
+    + allowedMethods: List<String> = ["*"]
+    + allowedHeaders: List<String> = ["*"]
+    + allowCredentials: Boolean = true
+    --Operations--
+    + corsWebFilter(): CorsWebFilter
+    --Ports--
+    ○ provides: ICorsConfiguration
+    ● requires: ISpringWebFlux
+    --Responsibilities--
+    • Configure CORS
+    • Allow frontend origins
+    • Enable credentials
+  }
+
+  BLOCK RateLimitConfig <<block>> {
+    --References--
+    • clientIpExtractor: ClientIpExtractor [1]
+    --Operations--
+    + ipKeyResolver(): KeyResolver
+    --Ports--
+    ○ provides: IKeyResolver
+    ● requires: IClientIpExtractor
+    ● requires: IRedisRateLimiter
+    --Responsibilities--
+    • Resolve client identity
+    • Delegate IP extraction
+    • Integrate with rate limiter
+  }
+
+  BLOCK GatewayRoutesConfig <<block>> {
+    <<application.yml>>
+    --Values--
+    + orchestratorUri: String
+    + routeId: String
+    + pathPredicate: String
+    + circuitBreakerName: String
+    + fallbackUri: String
+    + connectTimeout: Integer = 5000
+    + responseTimeout: Duration = 10s
+    --Ports--
+    ○ provides: IRouteDefinition
+    ● requires: IOrchestratorService
+    ● requires: ICircuitBreaker
+    ● requires: IFallbackHandler
+    --Responsibilities--
+    • Define routing rules
+    • Configure circuit breaker
+    • Set HTTP client parameters
+  }
+
+  BLOCK Resilience4jConfig <<block>> {
+    <<application.yml>>
+    --Values--
+    + slidingWindowType: Enum = COUNT_BASED
+    + slidingWindowSize: Integer = 50
+    + minimumNumberOfCalls: Integer = 10
+    + failureRateThreshold: Integer = 50
+    + waitDurationInOpenState: Duration = 10s
+    --Ports--
+    ○ provides: ICircuitBreaker
+    ● requires: IMetricsCollector
+    --Responsibilities--
+    • Monitor service health
+    • Open circuit on failures
+    • Trigger fallback responses
+  }
+}
+
+APIGatewayApplication ..> CorsConfig : uses
+APIGatewayApplication ..> RateLimitConfig : uses
+APIGatewayApplication ..> GatewayRoutesConfig : uses
+APIGatewayApplication ..> Resilience4jConfig : uses
+
+
+package "Filter Layer" {
+
+  BLOCK LoggingFilter <<block>> {
+    <<GlobalFilter, Ordered>>
+    --References--
+    • responseLogger: ResponseLogger [1]
+    --Values--
+    • order: Integer = -1
+    --Operations--
+    + filter(exchange, chain): Mono<Void>
+    + getOrder(): int
+    --Ports--
+    ○ provides: IGlobalFilter
+    ● requires: IResponseLogger
+    ● requires: IServerWebExchange
+    --Responsibilities--
+    • Intercept all requests/responses
+    • Log HTTP method and path
+    • Log response status
+    • Log errors in filter chain
+    • Execute with order -1
+  }
+}
+
+APIGatewayApplication ..> LoggingFilter : uses
+
+' ============================================================================
+' Support Layer Blocks
+' ============================================================================
+package "Support Layer" {
+
+  INTERFACE ResponseLogger <<interface>> {
+    --Operations--
+    + logRequest(method: String, path: String): void
+    + logResponse(method: String, path: String, status: HttpStatusCode): void
+    + logError(method: String, path: String, error: Throwable): void
+    --Contract--
+    • Abstraction for logging
+    • Decouple logging details
+    • Allow swapping strategy
+  }
+
+  BLOCK DefaultResponseLogger <<block>> {
+    --References--
+    • log: Logger [1]
+    --Operations--
+    + logRequest(method, path): void
+    + logResponse(method, path, status): void
+    + logError(method, path, error): void
+    - safe(s: String): String
+    --Ports--
+    ○ provides: IResponseLogger
+    ● requires: ISlf4jLogger
+    --Responsibilities--
+    • Write info logs
+    • Write error logs
+    • Sanitize null values
+  }
+
+  INTERFACE ClientIpExtractor <<interface>> {
+    --Operations--
+    + extract(request: ServerHttpRequest): String
+    --Contract--
+    • Strategy for IP extraction
+    • Return preferred client IP
+    • Keep logic testable
+  }
+
+  BLOCK DefaultClientIpExtractor <<block>> {
+    --Operations--
+    + extract(request: ServerHttpRequest): String
+    --Ports--
+    ○ provides: IClientIpExtractor
+    ● requires: IServerHttpRequest
+    --Behavior--
+    1. Parse X-Forwarded-For header
+    2. Return first non-blank value
+    3. Fallback to remote address
+    4. Return "unknown" if unavailable
+    --Responsibilities--
+    • Extract client IP from headers
+    • Handle missing headers
+    • Support load balancers
+  }
+
+  DefaultResponseLogger ..|> ResponseLogger : implements
+  DefaultClientIpExtractor ..|> ClientIpExtractor : implements
+}
+
+LoggingFilter ..> ResponseLogger : requires
+RateLimitConfig ..> ClientIpExtractor : requires
+
+
+package "Web Layer" {
+
+  BLOCK FallbackController <<block>> {
+    <<@RestController>>
+    --Values--
+    + basePath: String = "/fallback"
+    + produces: MediaType = JSON
+    --Operations--
+    + orchestratorFallback(request): ResponseEntity
+    + schedulerFallback(request): ResponseEntity
+    + defaultFallback(request): ResponseEntity
+    --Ports--
+    ○ provides: IFallbackHandler
+    ● requires: IServerHttpRequest
+    ● requires: ICircuitBreakerEvents
+    --Endpoints--
+    • POST/GET/PUT/DELETE /fallback/orchestrator
+    • POST/GET/PUT/DELETE /fallback/scheduler
+    • POST/GET/PUT/DELETE /fallback/default
+    --Responsibilities--
+    • Handle CircuitBreaker fallbacks
+    • Return HTTP 503
+    • Provide consistent error structure
+    • Include debugging metadata
+  }
+}
+
+APIGatewayApplication ..> FallbackController : uses
+GatewayRoutesConfig ..> FallbackController : requires
+
+
+package "External Dependencies" {
+
+  BLOCK RedisServer <<external>> {
+    --Values--
+    + host: String = "localhost"
+    + port: Integer = 6379
+    --Ports--
+    ○ provides: IRedisRateLimiter
+    ○ provides: IDistributedCache
+    --Purpose--
+    • Store rate limiting counters
+    • Distributed caching
+  }
+
+  BLOCK OrchestratorService <<external>> {
+    --Values--
+    + uri: String = "http://orchestrator:8082"
+    + healthEndpoint: String = "/actuator/health"
+    --Ports--
+    ○ provides: IOrchestratorService
+    ○ provides: IProductionOrderAPI
+    --Endpoints--
+    • POST /api/v1/orchestrator/orders
+    • GET /api/v1/orchestrator/orders/{id}
+    --Purpose--
+    • Core business logic
+    • Domain orchestration
+    • Event publishing to Kafka
+  }
+
+  BLOCK ExternalServiceUI <<external>> {
+    <<React/Vite>>
+    --Values--
+    + origins: List<String>
+    --Ports--
+    ● requires: IAPIGateway
+    ● requires: ICorsPolicy
+    --Purpose--
+    • User interface
+    • Submit production orders
+    • Frontend client
+  }
+}
+
+RateLimitConfig ..> RedisServer : requires
+GatewayRoutesConfig ..> OrchestratorService : requires
+CorsConfig <.. ExternalServiceUI : required by
+
+
+package "Interface Definitions" {
+
+  INTERFACE IResponseLogger <<interface>> {
+    ○ provides: Logging capabilities for lifecycle
+  }
+
+  INTERFACE IClientIpExtractor <<interface>> {
+    ○ provides: Client IP extraction
+  }
+
+  INTERFACE IFallbackHandler <<interface>> {
+    ○ provides: Fallback responses
+  }
+
+  INTERFACE ICorsConfiguration <<interface>> {
+    ○ provides: CORS rules
+  }
+
+  INTERFACE IKeyResolver <<interface>> {
+    ○ provides: Key resolution for rate limiting
+  }
+
+  INTERFACE IGlobalFilter <<interface>> {
+    ○ provides: Request/response interception
+  }
+
+  INTERFACE ICircuitBreaker <<interface>> {
+    ○ provides: Resilience mechanism
+    ● requires: IMetricsCollector
+    ● requires: IFallbackHandler
+  }
+
+  INTERFACE IRouteDefinition <<interface>> {
+    ○ provides: Route mapping configuration
+    ● requires: IOrchestratorService
+    ● requires: ICircuitBreaker
+  }
+
+  INTERFACE IOrchestratorService <<interface>> {
+    ○ provides: Production order management API
+  }
+
+  INTERFACE IRedisRateLimiter <<interface>> {
+    ○ provides: Distributed rate limiting storage
+  }
+}
+
+
+note right of APIGatewaySystem
+  **API Gateway System**
+  Entry point for all external requests
+
+  **Key Features:**
+  • CORS configuration
+  • Rate limiting (Redis-based)
+  • Circuit breaker (Resilience4j)
+  • Request/response logging
+  • Fallback handling
+end note
+
+note bottom of "Configuration Layer"
+  **Configuration Sources:**
+  • application.yml
+  • Java @Configuration classes
+  • Environment variables
+end note
+
+legend right
+  **Notation:**
+  ○ provides = Provided Interface
+  ● requires = Required Interface
+  <<block>> = SysML Block
+  <<interface>> = Interface Definition
+  <<external>> = External Dependency
+endlegend
+
+@enduml
+

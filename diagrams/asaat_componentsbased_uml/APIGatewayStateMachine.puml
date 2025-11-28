@@ -1,0 +1,63 @@
+@startuml API-Gateway State Machine
+[*] --> RequestReceived
+
+state "Request Received" as RequestReceived
+state "Logging Request" as LogRequest
+state "Route Matching" as RouteMatch
+state "Circuit Breaker Check" as CircuitCheck
+state "Forward to Orchestrator" as Forward
+state "Fallback Controller" as Fallback
+state "Receive Response" as ReceiveResponse
+state "Logging Response" as LogResponse
+
+RequestReceived --> LogRequest : LoggingFilter\n(Order = -1)
+LogRequest --> RouteMatch : Log method & path
+
+RouteMatch --> CircuitCheck : Match:\n/api/v1/orchestrator/**
+
+state CircuitCheck {
+  [*] --> Closed
+
+  state "CLOSED" as Closed
+  state "HALF_OPEN" as HalfOpen
+  state "OPEN" as Open
+
+  Closed --> HalfOpen : Failure rate > 50%\n(min 10 calls)
+  HalfOpen --> Closed : Test successful
+  HalfOpen --> Open : Test failed
+  Open --> HalfOpen : Wait 10s elapsed
+}
+
+Closed --> Forward : Circuit healthy
+HalfOpen --> Forward : Test request
+Open --> Fallback : Circuit broken
+
+Forward --> ReceiveResponse : Orchestrator\nresponse
+Fallback --> ReceiveResponse : Fallback\nresponse
+
+ReceiveResponse --> LogResponse : Response received
+LogResponse --> [*] : Return to client
+
+note right of RouteMatch
+  URI: http://orchestrator:8082
+  Predicate: Path=/api/v1/orchestrator/**
+  Filters:
+  - CircuitBreaker
+  - Headers (X-Gateway-Request)
+end note
+
+note right of CircuitCheck
+  Resilience4j Configuration:
+  - Sliding window: 50 calls
+  - Failure threshold: 50%
+  - Wait duration: 10s
+end note
+
+note right of Fallback
+  Forward to:
+  /fallback/orchestrator
+
+  (FallbackController)
+end note
+
+@enduml

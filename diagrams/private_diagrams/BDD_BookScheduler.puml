@@ -1,0 +1,126 @@
+@startuml BookScheduler Component Architecture
+
+!define RECTANGLE_COLOR #E8F5E9
+!define INTERFACE_COLOR #BBDEFB
+
+skinparam componentStyle rectangle
+skinparam backgroundColor #FAFAFA
+skinparam component {
+  BackgroundColor RECTANGLE_COLOR
+  BorderColor #2E7D32
+  ArrowColor #1976D2
+}
+
+' External-facing components
+package "Frontend Layer" {
+  component [External-Service\n(React + Vite)] as ExternalService #FFE0B2
+}
+
+package "API Layer" {
+  component [API-Gateway\n(Spring Cloud Gateway)] as APIGateway #E1F5FE
+}
+
+package "Business Logic Layer" {
+  component [Orchestrator\n(Spring Boot)] as Orchestrator #E8F5E9
+}
+
+package "Scheduling Layer" {
+  component [BookScheduler\n(C# + MQTT)] as BookScheduler #FFF9C4
+  component [MachineManager] as MachineManager #FFF59D
+  component [Machine Simulators\n(Printer/Cover/Binder/Packager)] as Machines #FFF59D
+}
+
+package "Infrastructure" {
+  database "PostgreSQL" as PostgreSQL #E3F2FD
+  queue "Kafka" as Kafka #FCE4EC
+  queue "MQTT Broker\n(Mosquitto)" as MQTT #F3E5F5
+  database "Redis" as Redis #FFEBEE
+}
+
+' Provided interfaces
+interface "HTTP /api/v1/orchestrator/**" as OrchestratorAPI
+interface "OrderIngestController\n(POST /orders, GET /orders/{id})" as OrderAPI
+interface "EventPublisher\n(orders.created)" as EventPublisher
+interface "MqttClientService\n(pub/sub)" as MqttClient
+interface "DbHelper\n(Machines, Books, Stages)" as DbHelper
+interface "Rate Limiter" as RateLimiter
+interface "Circuit Breaker" as CircuitBreaker
+interface "OrderRepository\n(JPA)" as OrderRepo
+
+' External-Service requires and uses
+ExternalService -down-> APIGateway : "HTTP REST\n(axios)"
+
+' API-Gateway provides and requires
+APIGateway -down- OrchestratorAPI : provides
+APIGateway .down.> CircuitBreaker : uses
+APIGateway .down.> RateLimiter : uses
+APIGateway ..> Redis : requires
+OrchestratorAPI -down-> Orchestrator : routes to
+
+' Orchestrator provides and requires
+Orchestrator -down- OrderAPI : provides
+Orchestrator .down.> OrderRepo : requires
+Orchestrator .down.> EventPublisher : requires
+OrderRepo -down-> PostgreSQL : JDBC
+EventPublisher -down-> Kafka : publishes\n"orders.created"
+
+' BookScheduler internal structure
+BookScheduler *-down- MachineManager : contains
+BookScheduler *-down- Machines : contains
+BookScheduler .down.> MqttClient : requires
+BookScheduler .down.> DbHelper : requires
+
+' BookScheduler dependencies
+MqttClient -down-> MQTT : "pub/sub\nmachines/+/commands\njobs/+/stages/+/progress"
+DbHelper -down-> PostgreSQL : "Dapper\n(machines, books,\nbook_stages)"
+
+' Kafka to BookScheduler (event-driven)
+Kafka .right.> BookScheduler : "order events\n(future integration)" #Gray
+
+' Machine interactions
+MachineManager -down-> Machines : "assigns jobs\nvia MQTT"
+
+' Notes
+note right of ExternalService
+  **Provides:**
+  - Web UI for order creation
+  **Requires:**
+  - HTTP client (axios)
+end note
+
+note right of APIGateway
+  **Provides:**
+  - REST API gateway
+  - Routing, CORS, logging
+  - Circuit breaker, rate limiting
+  **Requires:**
+  - Redis (rate limiting)
+  - HTTP client (WebClient)
+end note
+
+note right of Orchestrator
+  **Provides:**
+  - Order management API
+  - Order orchestration logic
+  **Requires:**
+  - OrderRepository (PostgreSQL)
+  - EventPublisher (Kafka)
+end note
+
+note left of BookScheduler
+  **Provides:**
+  - Job scheduling service
+  - Machine management
+  - Production pipeline orchestration
+  **Requires:**
+  - MqttClientService (MQTT)
+  - DbHelper (PostgreSQL)
+
+  **Pipeline stages:**
+  1. Printing (parallel)
+  2. Cover (parallel)
+  3. Binding (sequential)
+  4. Packaging (sequential)
+end note
+
+@enduml

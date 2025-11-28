@@ -1,0 +1,46 @@
+@startuml Machine_StateMachine
+title Machine State Machine (Generic: Printer/Cover/Binder/Packager)
+
+skinparam state {
+  BackgroundColor #2C2C2C
+  FontColor White
+  BorderColor White
+  ArrowColor White
+}
+
+[*] --> Idle
+
+Idle : Waiting for job assignment
+Idle : machine.is_busy = false
+
+Idle --> CheckingPrerequisites : MQTT 'Done'\nevent received
+
+CheckingPrerequisites : Verify stage prerequisites
+CheckingPrerequisites : Check status in DB
+
+state choice1 <<choice>>
+CheckingPrerequisites --> choice1
+
+choice1 --> Idle : [No (Not Ready)]\nPrerequisites not met
+choice1 --> WorkProcessing : [YES Ready]\nAssign job to machine
+
+WorkProcessing : Publishing progress updates
+WorkProcessing : status = running
+WorkProcessing : progress = 0..99
+WorkProcessing : machine.is_busy = true
+
+note right of WorkProcessing
+  isBusy == True
+  (Simulate Delay Loop)
+  Increment progress
+end note
+
+WorkProcessing --> JobFinished : Progress == 100%\nPublish MQTT 'Done'
+
+JobFinished : status = done
+JobFinished : machine.is_busy = false
+JobFinished : Release machine
+
+JobFinished --> [*]
+
+@enduml

@@ -1,0 +1,96 @@
+@startuml API-Gateway State Machine
+!define CONDITION [condition]
+!define EVENT event
+!define RESPONSE / response
+
+title API-Gateway (Spring Cloud Gateway)\nRequest Processing State Machine
+
+[*] --> RequestReceived
+
+state "RequestReceived" as RequestReceived
+state "CORSCheck" as CORSCheck
+state "LoggingRequest" as LogRequest
+state "RouteMatching" as RouteMatch
+state "CircuitBreakerCheck" as CBCheck
+state "ForwardingToOrchestrator" as Forward
+state "FallbackResponse" as Fallback
+state "ReceivingResponse" as ReceiveResp
+state "LoggingResponse" as LogResp
+state "ResponseToClient" as Response
+state "ErrorState" as Error
+
+RequestReceived --> CORSCheck : HTTP request arrives\n/ CorsWebFilter invoked
+
+CORSCheck --> LogRequest : Origin validation\n[origin in {localhost:5173,5174,3000,5175}]\n/ add CORS headers
+
+CORSCheck --> Response : Origin validation\n[origin not allowed]\n/ return 403 Forbidden
+
+LogRequest --> RouteMatch : Log request\n/ responseLogger.logRequest(method, path)\n[Order=-1, runs first]\n(LoggingFilter.java:41)
+
+RouteMatch --> CBCheck : Path match\n[path == /api/v1/orchestrator/**]\n/ route to uri: http://orchestrator:8082\n(application.yml:29-32)
+
+RouteMatch --> Response : No route match\n[no predicate matches]\n/ return 404 Not Found
+
+state CBCheck {
+  [*] --> EvaluateCircuit
+
+  state "Evaluate\nCircuit State" as EvaluateCircuit
+  state "CLOSED\n(healthy)" as CB_Closed
+  state "HALF_OPEN\n(testing)" as CB_HalfOpen
+  state "OPEN\n(fail fast)" as CB_Open
+
+  EvaluateCircuit --> CB_Closed : Check Resilience4j\n[failureRate < 50% over 50 calls]\n[minimumCalls >= 10]\n(application.yml:52-57)
+
+  EvaluateCircuit --> CB_HalfOpen : Check Resilience4j\n[waitDuration 10s elapsed]\n[testing recovery]
+
+  EvaluateCircuit --> CB_Open : Check Resilience4j\n[failureRate >= 50%]\n[circuit tripped]
+
+  CB_Closed --> [*]
+  CB_HalfOpen --> [*]
+  CB_Open --> [*]
+}
+
+CBCheck --> Forward : Circuit state: CLOSED\n/ forward request normally
+
+CBCheck --> Forward : Circuit state: HALF_OPEN\n/ forward test request
+
+CBCheck --> Fallback : Circuit state: OPEN\n/ invoke fallbackUri:\n/fallback/orchestrator\n(application.yml:42)
+
+Forward --> ReceiveResp : Orchestrator responds\n[any status code 200/400/500]\n/ proxy response
+
+Forward --> Error : Orchestrator timeout/error\n[connectTimeout > 5s ||\nresponseTimeout > 10s]\n/ connection failure
+
+Fallback --> ReceiveResp : Generate fallback\n/ FallbackController.orchestratorFallback()\n/ return 503 JSON:\n{\n  "service": "orchestrator",\n  "status": "unavailable",\n  "error": "Service Unavailable",\n  "message": "temporarily unavailable",\n  "timestamp": ISO-8601\n}\n(FallbackController.java:30-42)
+
+ReceiveResp --> LogResp : Response received\n/ status code available
+
+LogResp --> Response : Log response\n/ responseLogger.logResponse(method, path, status)\n(LoggingFilter.java:48)
+
+Error --> Response : Error occurred\n/ responseLogger.logError(method, path, error)\n/ return 500 or 503\n(LoggingFilter.java:45)
+
+Response --> [*]
+
+note right of RouteMatch
+  DISABLED: Rate limiting is commented
+  out in application.yml lines 34-38.
+  RateLimitConfig exists but unused.
+end note
+
+note right of CBCheck
+  Circuit Breaker Config:
+  - Sliding window: 50 calls (COUNT_BASED)
+  - Min calls: 10 (before calculating)
+  - Failure threshold: 50%
+  - Wait in open state: 10s
+
+  application.yml:49-58
+end note
+
+note bottom of Fallback
+  UNUSED: FallbackController has
+  /fallback/scheduler endpoint but
+  no matching route in application.yml.
+  Future functionality.
+end note
+
+@enduml

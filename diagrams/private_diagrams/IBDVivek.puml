@@ -1,0 +1,181 @@
+@startuml System-IBD
+
+title Internal Block Diagram (IBD) - System Internal Communication
+
+skinparam component {
+  BackgroundColor<<layer>> WhiteSmoke
+  BorderColor<<layer>> Black
+  BorderThickness 1
+  FontSize 11
+}
+
+skinparam rectangle {
+  BackgroundColor<<system>> LightYellow
+  BorderColor<<system>> Black
+  BorderThickness 2
+}
+
+skinparam interface {
+  BackgroundColor White
+  BorderColor Black
+}
+
+skinparam shadowing false
+skinparam linetype polyline
+
+' ============================================================================
+' EXTERNAL SERVICE INTERNAL STRUCTURE
+' ============================================================================
+
+rectangle "**External Service**" as ExternalServiceSystem <<system>> {
+
+  component "OrderForm\n<<UI Component>>" as OrderForm <<layer>>
+  component "useOrderForm\n<<Hook>>" as UseOrderForm <<layer>>
+  component "FunctionMethods\n<<API Client>>" as FunctionMethods <<layer>>
+
+  interface "IFormState" as IFormState
+  interface "IHTTPClient" as IHTTPClient
+
+  OrderForm --( IFormState : uses
+  UseOrderForm -0- IFormState : provides
+
+  UseOrderForm --( IHTTPClient : uses
+  FunctionMethods -0- IHTTPClient : provides
+}
+
+' ============================================================================
+' API GATEWAY INTERNAL STRUCTURE
+' ============================================================================
+
+rectangle "**API Gateway**" as APIGatewaySystem <<system>> {
+
+  component "GatewayRouter\n<<Route Config>>" as GatewayRouter <<layer>>
+  component "LoggingFilter\n<<GlobalFilter>>" as LoggingFilter <<layer>>
+  component "CorsConfig\n<<Config>>" as CorsConfig <<layer>>
+  component "CircuitBreaker\n<<Resilience4j>>" as CircuitBreaker <<layer>>
+  component "FallbackController\n<<Controller>>" as FallbackController <<layer>>
+
+  interface "IRouting" as IRouting
+  interface "ILogging" as ILogging
+  interface "ICors" as ICors
+  interface "IFallback" as IFallback
+
+  GatewayRouter -0- IRouting : provides
+  LoggingFilter -0- ILogging : provides
+  CorsConfig -0- ICors : provides
+
+  GatewayRouter --( ILogging : uses
+  GatewayRouter --( ICors : uses
+  GatewayRouter --( IFallback : uses
+
+  CircuitBreaker --( IFallback : triggers
+  FallbackController -0- IFallback : provides
+}
+
+' ============================================================================
+' ORCHESTRATOR INTERNAL STRUCTURE
+' ============================================================================
+
+rectangle "**Orchestrator**" as OrchestratorSystem <<system>> {
+
+  component "OrderIngestController\n<<REST Controller>>" as OrderController <<layer>>
+  component "OrderOrchestrationService\n<<Service>>" as OrderService <<layer>>
+  component "Domain\n<<ProductionOrder>>" as Domain <<layer>>
+  component "JpaOrderRepository\n<<Repository>>" as Repository <<layer>>
+  component "KafkaEventPublisher\n<<Publisher>>" as KafkaPublisher <<layer>>
+
+  interface "IOrderAPI" as IOrderAPI
+  interface "IOrderService" as IOrderService
+  interface "IOrderRepository" as IOrderRepository
+  interface "IEventPublisher" as IEventPublisher
+
+  OrderController -0- IOrderAPI : provides
+  OrderController --( IOrderService : uses
+
+  OrderService -0- IOrderService : provides
+  OrderService --( IOrderRepository : uses
+  OrderService --( IEventPublisher : uses
+
+  Repository -0- IOrderRepository : provides
+  KafkaPublisher -0- IEventPublisher : provides
+
+  OrderService --> Domain : creates/updates
+}
+
+' ============================================================================
+' EXTERNAL CONNECTIONS BETWEEN SYSTEMS
+' ============================================================================
+
+interface "HTTP REST" as HTTPRest
+interface "Gateway API" as GatewayAPI
+interface "Orchestrator API" as OrchestratorAPI
+
+FunctionMethods --( HTTPRest : sends
+HTTPRest )-- GatewayAPI
+GatewayRouter -0- GatewayAPI : receives
+
+GatewayRouter --( OrchestratorAPI : forwards
+OrchestratorAPI )-- OrderController
+
+' ============================================================================
+' INFRASTRUCTURE
+' ============================================================================
+
+database "PostgreSQL" as DB
+queue "Kafka" as Kafka
+
+Repository --( DB : persists to
+KafkaPublisher --( Kafka : publishes to
+
+' ============================================================================
+' NOTES
+' ============================================================================
+
+note right of ExternalServiceSystem
+  **External Service Layers:**
+  • OrderForm: User interface
+  • useOrderForm: State management
+  • FunctionMethods: API communication
+
+  **Flow:**
+  User Input → Form State → HTTP Request
+end note
+
+note top of APIGatewaySystem
+  **API Gateway Layers:**
+  • Router: Route matching & forwarding
+  • Filters: Logging, CORS, Rate limiting
+  • Circuit Breaker: Resilience
+  • Fallback: Error responses
+
+  **Flow:**
+  Request → Filters → Router → Backend
+  (On failure → Circuit Breaker → Fallback)
+end note
+
+note right of OrchestratorSystem
+  **Orchestrator Layers (Hexagonal):**
+  • API Layer: OrderIngestController
+  • Application: OrderOrchestrationService
+  • Domain: ProductionOrder, BookDetails
+  • Infrastructure: JPA, Kafka
+
+  **Flow:**
+  HTTP → Controller → Service → Domain
+  Service → Repository (save)
+  Service → EventPublisher (publish)
+end note
+
+legend bottom
+  **IBD Notation:**
+  -0- = Provides interface
+  --( = Requires interface
+  --> = Direct dependency
+  )-- = Interface binding
+
+  **Internal Communication:**
+  Shows how components within each system
+  communicate through well-defined interfaces
+endlegend
+
+@enduml

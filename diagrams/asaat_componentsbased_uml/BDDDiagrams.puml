@@ -1,0 +1,94 @@
+@startuml
+
+class SystemContext {
+    <<block>>
+    Book Manufacturing System
+    (Docker Compose Scope)
+}
+
+class OrchestratorService {
+    <<block>>
+    Orchestrator Service
+    (Spring Boot App)
+}
+
+class ApiGateway {
+    <<block>>
+    API Gateway
+    (Entry Point)
+}
+
+class DomainLayer {
+    <<block>>
+    Domain Layer
+    (org...domain)
+}
+
+class InterfaceLayer {
+    <<block>>
+    API Layer
+    (org...api)
+}
+
+class OrderModel {
+    <<block>>
+    Order (Payload)
+}
+
+class BookModel {
+    <<block>>
+    Book Details
+}
+
+class RestController {
+    <<block>>
+    Orchestrator Controller
+}
+
+class InfraLayer {
+    <<block>>
+    Infrastructure Layer
+    (Communication Client)
+}
+
+class ExtServiceClient {
+    <<block>>
+    External Service Client
+    (HTTP/REST)
+}
+
+class MqttClient {
+    <<block>>
+    MQTT Client
+    (Messaging)
+}
+
+note "Level 0: Root" as N0
+note "Level 1: Managers" as N1
+note "Level 2: Internals (Inside Orchestrator)" as N2
+note "Level 3: Specifics" as N3
+note "Controller replacement" as N35
+note "Level 4: Outbound" as N4
+note "Level 5: Implementation" as N5
+note "Relationships mirroring the Image hierarchy" as N55
+note "Domain decomposition" as N6
+note "Interface decomposition" as N7
+note "Flow down to Communication" as N8
+
+SystemContext *-- OrchestratorService
+SystemContext *-- ApiGateway
+
+OrchestratorService *-- DomainLayer : "Units"
+OrchestratorService *-- InterfaceLayer : "Controller Interface"
+
+DomainLayer <|-- OrderModel
+DomainLayer <|-- BookModel
+
+InterfaceLayer <|-- RestController
+
+RestController --> InfraLayer : "Uses"
+
+InfraLayer <|-- ExtServiceClient
+InfraLayer <|-- MqttClient
+
+@enduml

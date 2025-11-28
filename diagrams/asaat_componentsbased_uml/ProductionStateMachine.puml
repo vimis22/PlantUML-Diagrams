@@ -1,41 +1,58 @@
 @startuml
-title Job Pipeline State Machine (Book Lifecycle)
+title Job Pipeline State Machine
 hide empty description
 
-[*] --> Pending : Job Created in DB
+' Data Context / Attributes
+note as N1
+  <b>Job Context Attributes:</b>
+  * BookId: Guid
+  * PrintingStatus: Queued | Done
+  * CoverStatus: Queued | Done
+  * BindingStatus: Queued | Done
+end note
+
+[*] --> Pending : Job Created
 
 state "Parallel Production Phase" as Phase1 {
-    state "Printing Stage" as Printing {
-        [*] --> Print_Queued : Status: queued
-        Print_Queued --> Print_Running : Machine Assigned
-        Print_Running --> Print_Done : MQTT 'done'
+    state "Split Processing" as f1 <<fork>>
+    state "Sync Processing" as j1 <<join>>
+
+    [*] --> f1
+
+    f1 --> PrintingStage
+    f1 --> CoverStage
+
+    state PrintingStage {
+        [*] --> P_Queued : Status = queued
+        P_Queued --> P_Running : Machine Assigned
+        P_Running --> P_Done : MQTT 'done'
     }
 
-    state "Cover Stage" as Cover {
-        [*] --> Cover_Queued : Status: queued
-        Cover_Queued --> Cover_Running : Machine Assigned
-        Cover_Running --> Cover_Done : MQTT 'done'
+    state CoverStage {
+        [*] --> C_Queued : Status = queued
+        C_Queued --> C_Running : Machine Assigned
+        C_Running --> C_Done : MQTT 'done'
     }
+
+    P_Done --> j1
+    C_Done --> j1
 }
 
-Pending --> Phase1 : KickOffPendingJobs
+j1 --> BindingStage : Both Stages 'done'
 
-state "Synchronization Check" as Sync <<choice>>
-Phase1 --> Sync : Any Stage Completed
-Sync --> Binding_Queued : Printing=Done AND Cover=Done
-Sync --> Phase1 : Waiting for other stage
-
-state "Binding Phase" as Phase2 {
-    Binding_Queued --> Binding_Running : Binder Assigned
-    Binding_Running --> Binding_Done : MQTT 'done'
+state BindingStage {
+    [*] --> B_Queued : Status = queued
+    B_Queued --> B_Running : Binder Assigned
+    B_Running --> B_Done : MQTT 'done'
 }
 
-Phase2 --> Packaging_Queued : Binding Complete
+BindingStage --> PackagingStage
 
-state "Packaging Phase" as Phase3 {
-    Packaging_Queued --> Packaging_Running : Packager Assigned
-    Packaging_Running --> Packaging_Done : MQTT 'done'
+state PackagingStage {
+    [*] --> Pac_Queued : Status = queued
+    Pac_Queued --> Pac_Running : Packager Assigned
+    Pac_Running --> Pac_Done : MQTT 'done'
 }
 
-Packaging_Done --> [*] : Job Fully Processed
+PackagingStage --> [*] : Job Complete
 @enduml

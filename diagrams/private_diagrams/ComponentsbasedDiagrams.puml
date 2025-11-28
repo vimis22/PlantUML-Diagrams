@@ -1,0 +1,176 @@
+@startuml System-Components-Communication
+
+title System Component Communication - API Gateway, Orchestrator, External Service
+
+skinparam component {
+  BackgroundColor<<gateway>> LightYellow
+  BorderColor<<gateway>> Orange
+  BackgroundColor<<orchestrator>> LightBlue
+  BorderColor<<orchestrator>> DarkBlue
+  BackgroundColor<<frontend>> LightGreen
+  BorderColor<<frontend>> DarkGreen
+  BackgroundColor<<infrastructure>> LightGray
+  BorderColor<<infrastructure>> Gray
+}
+
+skinparam interface {
+  BackgroundColor White
+  BorderColor Black
+}
+
+' ============================================================================
+' EXTERNAL SERVICE (FRONTEND)
+' ============================================================================
+
+component "External Service\n(React/Vite)" as ExternalService <<frontend>> {
+  [Order Submission UI]
+}
+
+interface "HTTP REST API" as IHTTP
+interface "CORS Policy" as ICORS
+
+ExternalService --( IHTTP : requires
+ExternalService --( ICORS : requires
+
+' ============================================================================
+' API GATEWAY
+' ============================================================================
+
+component "API Gateway\n(Spring Cloud Gateway)" as APIGateway <<gateway>> {
+  [Gateway Router] as Router
+  [CORS Filter] as CORS
+  [Rate Limiter] as RateLimit
+  [Circuit Breaker] as CircuitBreaker
+  [Logging Filter] as Logger
+  [Fallback Handler] as Fallback
+}
+
+interface "Gateway API" as IGatewayAPI
+interface "Orchestrator API" as IOrchestratorAPI
+interface "Rate Limit Store" as IRateLimit
+interface "Fallback Response" as IFallback
+
+APIGateway -0- IGatewayAPI : provides
+APIGateway --( IOrchestratorAPI : requires
+APIGateway --( IRateLimit : requires
+APIGateway -0- IFallback : provides
+
+' Connect External Service to Gateway
+IHTTP )-- IGatewayAPI
+ICORS )-- APIGateway
+
+' ============================================================================
+' ORCHESTRATOR SERVICE
+' ============================================================================
+
+component "Orchestrator\n(Spring Boot)" as Orchestrator <<orchestrator>> {
+  [Order Controller] as OrderCtrl
+  [Order Service] as OrderSvc
+  [Domain Logic] as Domain
+  [Repository] as Repo
+  [Event Publisher] as EventPub
+}
+
+interface "Order Management API" as IOrderAPI
+interface "Database Access" as IDatabase
+interface "Event Bus" as IEventBus
+
+Orchestrator -0- IOrderAPI : provides
+Orchestrator --( IDatabase : requires
+Orchestrator --( IEventBus : requires
+
+' Connect Gateway to Orchestrator
+IOrchestratorAPI )-- IOrderAPI
+
+' ============================================================================
+' INFRASTRUCTURE COMPONENTS
+' ============================================================================
+
+component "Redis\n(Cache & Rate Limiting)" as Redis <<infrastructure>>
+interface "Cache/Rate Limiter" as IRedis
+Redis -0- IRedis : provides
+IRateLimit )-- IRedis
+
+component "PostgreSQL\n(Database)" as Postgres <<infrastructure>>
+interface "Relational DB" as IDB
+Postgres -0- IDB : provides
+IDatabase )-- IDB
+
+component "Kafka\n(Event Streaming)" as Kafka <<infrastructure>>
+interface "Event Stream" as IKafka
+Kafka -0- IKafka : provides
+IEventBus )-- IKafka
+
+' ============================================================================
+' NOTES
+' ============================================================================
+
+note right of ExternalService
+  **Frontend Client**
+  • User submits production orders
+  • React/Vite SPA
+  • Consumes Gateway API
+end note
+
+note top of APIGateway
+  **Entry Point & Gateway**
+  • Route requests to services
+  • Apply CORS, rate limiting
+  • Circuit breaker for resilience
+  • Centralized logging
+  • Fallback responses
+end note
+
+note right of Orchestrator
+  **Business Logic & Orchestration**
+  • Process production orders
+  • Domain orchestration
+  • Persist to database
+  • Publish domain events
+end note
+
+note bottom of Redis
+  **Distributed Cache**
+  • Rate limiting counters
+  • Session storage
+end note
+
+note bottom of Postgres
+  **Persistent Storage**
+  • Production orders
+  • Order history
+end note
+
+note bottom of Kafka
+  **Event Streaming**
+  • Order created events
+  • Publish to BookScheduler
+end note
+
+' ============================================================================
+' LEGEND
+' ============================================================================
+
+legend right
+  **Component Communication:**
+
+  Request Flow:
+  1. User → External Service UI
+  2. External Service → API Gateway (HTTP)
+  3. API Gateway → Orchestrator (HTTP)
+  4. Orchestrator → PostgreSQL (persist)
+  5. Orchestrator → Kafka (publish event)
+
+  **Interface Notation:**
+  -0- = Provided Interface (lollipop)
+  --( = Required Interface (socket)
+  )-- = Interface connection
+
+  **Component Types:**
+  Yellow = Gateway Layer
+  Blue = Business Logic Layer
+  Green = Presentation Layer
+  Gray = Infrastructure
+endlegend
+
+@enduml

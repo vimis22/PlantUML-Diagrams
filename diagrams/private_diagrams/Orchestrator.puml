@@ -1,0 +1,87 @@
+@startuml Orchestrator Request Processing
+!define CONDITION [condition]
+!define EVENT event
+!define RESPONSE / response
+
+title Orchestrator (Spring Boot)\nRequest Processing State Machine
+
+[*] --> RequestReceived
+
+state "RequestReceived\nPOST /api/v1/orchestrator/orders" as ReqRecv
+state "Validating\n(@Valid check)" as Validate
+state "MappingToDomain\n(DTO → BookDetails)" as MapDomain
+state "CreatingOrder\n(state=PENDING)" as CreateOrder
+state "SavingToDatabase\n(JPA INSERT)" as SaveDB
+state "BuildingEvent\n(Kafka payload)" as BuildEvent
+state "PublishingToKafka\n(orders.created)" as PubKafka
+state "KafkaFailure\n(log warning)" as KafkaFail
+state "MarkingOrchestrated\n(PENDING→ORCHESTRATED)" as MarkOrch
+state "UpdatingDatabase\n(JPA UPDATE)" as UpdateDB
+state "ReturningSuccess\n(201 CREATED)" as Success
+state "ValidationError\n(400)" as ValError
+state "IllegalArgumentError\n(400)" as IllegalError
+state "OrderCreationError\n(500)" as CreateError
+state "GenericError\n(500)" as GenError
+
+ReqRecv --> Validate : POST request\n/ controller method invoked\n(OrderIngestController.java:33)
+
+Validate --> MapDomain : Bean validation\n[@NotBlank title, author]\n[@Min(1) pages, quantity]\n[@NotNull coverType, pageType]\n[all constraints pass]\n(CreateOrderRequest.java:20-27)
+
+Validate --> ValError : Bean validation\n[any @Valid constraint fails]\n/ throw MethodArgumentNotValidException
+
+MapDomain --> CreateOrder : Convert DTO\n/ ApiOrderMapper.toDomain(request)\n/ create BookDetails\n/ calculate estimatedCost\n(ApiOrderMapper.java:18-26)
+
+CreateOrder --> SaveDB : Create entity\n/ ProductionOrder.createOrder(bookDetails)\n/ set state=PENDING\n/ set createdAt=now()\n(ProductionOrder.java:52-53)
+
+SaveDB --> BuildEvent : Persist\n/ orderRepository.save(order)\n/ JPA INSERT\n/ generate ID\n(OrderOrchestrationService.java:36)
+
+BuildEvent --> PubKafka : Map to event\n/ OrderEventPayloadMapper.buildOrderCreatedEvent()\n/ create JSON: {order_id, timestamp,\n  status:"pending", books:{...}, ack_required:true}\n(OrderEventPayloadMapper.java:40-58)
+
+PubKafka --> MarkOrch : Publish event\n[Kafka available]\n/ kafkaTemplate.send("orders.created", orderId, JSON)\n/ logger.info("event published")\n(OrderOrchestrationService.java:43-44)
+
+PubKafka --> KafkaFail : Kafka failure\n[Kafka down || serialization error]\n/ catch Exception\n(KafkaEventPublisher.java:30-33)
+
+KafkaFail --> MarkOrch : Log warning\n/ logger.warn("Kafka not available...")\n/ CONTINUE execution (fail-open)\n(OrderOrchestrationService.java:45-47)
+
+MarkOrch --> UpdateDB : State transition\n[currentState == PENDING]\n/ savedOrder.markAsOrchestrated()\n/ set state=ORCHESTRATED\n/ set orchestratedAt=now()\n(ProductionOrder.java:56-64)
+
+MarkOrch --> IllegalError : State validation fails\n[currentState != PENDING]\n/ throw IllegalStateException\n"Kan kun orkestrere orders i PENDING state"
+
+UpdateDB --> Success : Persist state\n/ orderRepository.save(savedOrder)\n/ JPA UPDATE\n(OrderOrchestrationService.java:50)
+
+Success --> [*] : Build response\n/ ApiOrderMapper.toResponse(order)\n/ return 201 CREATED\n{\n  "orderId": 123,\n  "state": "ORCHESTRATED",\n  "createdAt": ISO-8601\n}\n(OrderIngestController.java:40-43)
+
+ValError --> [*] : Exception handler\n/ @ExceptionHandler(MethodArgumentNotValidException)\n/ return 400 BAD_REQUEST\n{\n  "error": "Validation Failed",\n  "timestamp": ISO-8601,\n  "errors": {"field": "message"}\n}\n(OrderIngestController.java:69-84)
+
+IllegalError --> [*] : Exception handler\n/ @ExceptionHandler(IllegalArgumentException)\n/ return 400 BAD_REQUEST\n{\n  "error": "Invalid Request",\n  "message": "...",\n  "timestamp": ISO-8601\n}\n(OrderIngestController.java:86-97)
+
+CreateOrder --> CreateError : Exception\n[any RuntimeException]
+SaveDB --> CreateError : Exception\n[any RuntimeException]
+BuildEvent --> CreateError : Exception\n[any RuntimeException]
+
+CreateError --> [*] : Exception handler\n/ @ExceptionHandler(OrderCreationException)\n/ return 500 INTERNAL_SERVER_ERROR\n{\n  "error": "Order Creation Failed",\n  "message": "...",\n  "timestamp": ISO-8601\n}\n(OrderIngestController.java:99-110)
+
+CreateError --> GenError : Unexpected exception
+GenError --> [*] : Exception handler\n/ @ExceptionHandler(Exception)\n/ return 500 INTERNAL_SERVER_ERROR\n(OrderIngestController.java:112-123)
+
+note right of PubKafka
+  DESIGN CHOICE: Kafka failure
+  does NOT block order creation.
+  System continues with warning.
+  Order marked ORCHESTRATED even
+  if event not published.
+
+  Risk: BookScheduler may miss
+  orders if Kafka is down.
+end note
+
+note bottom of MarkOrch
+  Transaction boundary:
+  @Transactional on createOrder()
+  (OrderOrchestrationService.java:30)
+
+  If markAsOrchestrated() throws,
+  entire transaction rolls back.
+end note
+
+@enduml

@@ -1,0 +1,139 @@
+@startuml System-Communication
+
+title System Component Communication (Based on Actual Implementation)
+
+skinparam rectangle {
+  BackgroundColor<<service>> WhiteSmoke
+  BorderColor<<service>> Black
+  BorderThickness 2
+  FontSize 13
+  Padding 20
+}
+
+skinparam interface {
+  BackgroundColor White
+  BorderColor Black
+  BorderThickness 1
+  FontSize 11
+}
+
+skinparam shadowing false
+skinparam nodesep 100
+skinparam ranksep 60
+
+' ============================================================================
+' COMPONENTS (Based on actual codebase)
+' ============================================================================
+
+rectangle "**External Service**\n<size:11>//React/Vite Frontend//</size>\n<size:10>OrderForm Component</size>" as ExternalService <<service>>
+
+rectangle "**API Gateway**\n<size:11>//Spring Cloud Gateway//</size>\n<size:10>Port: 8080</size>" as APIGateway <<service>>
+
+rectangle "**Orchestrator**\n<size:11>//Spring Boot Service//</size>\n<size:10>OrderIngestController</size>" as Orchestrator <<service>>
+
+' ============================================================================
+' INTERFACES (Based on actual API endpoints and communication)
+' ============================================================================
+
+interface "IOrderAPI\nPOST /api/v1/orchestrator/orders\nGET /api/v1/orchestrator/orders/:id" as IOrderAPI
+
+interface "ICircuitBreaker\nfallbackUri: /fallback/orchestrator" as ICircuitBreaker
+
+interface "ICorsPolicy\nAllowedOrigins: localhost:5173" as ICorsPolicy
+
+' ============================================================================
+' CONNECTIONS
+' ============================================================================
+
+' External Service -> API Gateway
+ExternalService --( IOrderAPI : requires
+ExternalService --( ICorsPolicy : requires
+
+' API Gateway provides CORS and routes
+APIGateway -0- ICorsPolicy : provides
+APIGateway -0- ICircuitBreaker : provides
+
+' API Gateway -> Orchestrator
+APIGateway --( IOrderAPI : routes to
+
+' Orchestrator provides Order API
+Orchestrator -0- IOrderAPI : provides
+
+' ============================================================================
+' ACTUAL DATA FLOW (from codebase)
+' ============================================================================
+
+note right of ExternalService
+  **Request Payload:**
+  {
+    "title": string,
+    "author": string,
+    "pages": number,
+    "coverType": "SOFTCOVER|HARDCOVER",
+    "pageType": "GLOSSY|MATTE",
+    "quantity": number
+  }
+
+  **Endpoint:**
+  POST http://localhost:8080/api/v1/orchestrator/orders
+end note
+
+note top of APIGateway
+  **Gateway Configuration:**
+  • Routes: /api/v1/orchestrator/** → orchestrator:8082
+  • Circuit Breaker: orchestratorCircuitBreaker
+  • Fallback: /fallback/orchestrator (503)
+  • Filters: Logging, CORS, CircuitBreaker
+  • Redis: Rate limiting (disabled)
+
+  **Resilience4j Settings:**
+  • Sliding Window: 50 calls
+  • Failure Threshold: 50%
+  • Wait Duration: 10s
+end note
+
+note right of Orchestrator
+  **Response:**
+  {
+    "orderId": long,
+    "title": string,
+    "author": string,
+    "status": "PENDING|PROCESSING|...",
+    "createdAt": timestamp
+  }
+
+  **Endpoints:**
+  • POST /api/v1/orchestrator/orders → Create
+  • GET /api/v1/orchestrator/orders/:id → Read
+end note
+
+' ============================================================================
+' LAYOUT
+' ============================================================================
+
+ExternalService -[hidden]right-> APIGateway
+APIGateway -[hidden]right-> Orchestrator
+
+' ============================================================================
+' LEGEND
+' ============================================================================
+
+legend bottom left
+  **Actual Communication Flow:**
+  1. User submits order form (React)
+  2. fetch() → localhost:8080/api/v1/orchestrator/orders
+  3. API Gateway routes to orchestrator:8082
+  4. Circuit Breaker monitors health
+  5. Orchestrator processes & returns OrderResponse
+
+  **Interface Notation:**
+  -0- = Provides interface
+  --( = Requires interface
+
+  **Technologies:**
+  • Frontend: React 18 + Vite + TypeScript
+  • Gateway: Spring Cloud Gateway 3.2.0
+  • Backend: Spring Boot 3.2.0
+end legend
+
+@enduml

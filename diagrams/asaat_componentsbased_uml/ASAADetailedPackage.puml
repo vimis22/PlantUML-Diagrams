@@ -1,0 +1,118 @@
+@startuml
+
+' === API-Gateway ===
+package "API-Gateway" {
+  package "api" as APIGW_api
+  package "application" as APIGW_app
+  package "infrastructure" as APIGW_infra {
+    package "clients" as APIGW_clients
+    package "config" as APIGW_config
+  }
+  package "shared" as APIGW_shared
+}
+
+' === Orchestrator ===
+package "Orchestrator" {
+  package "api" as ORCH_api
+  package "application" as ORCH_app {
+    package "workflow" as ORCH_workflow
+    package "services" as ORCH_services
+  }
+  package "domain" as ORCH_domain {
+    package "model" as ORCH_model
+    package "events" as ORCH_events
+  }
+  package "infrastructure" as ORCH_infra {
+    package "clients" as ORCH_clients
+    package "persistence" as ORCH_persistence
+  }
+}
+
+' === External-Service ===
+package "External-Service" {
+  package "api" as ES_api
+  package "application" as ES_app
+  package "domain" as ES_domain
+  package "infrastructure" as ES_infra {
+    package "persistence" as ES_persistence
+    package "messaging" as ES_msg
+  }
+  package "ui" as ES_ui {
+    package "web" as ES_web
+  }
+}
+
+' === BookScheduler_MQTT ===
+package "BookScheduler_MQTT" {
+  package "api" as BS_api
+  package "scheduler" as BS_scheduler
+  package "domain" as BS_domain
+  package "infrastructure" as BS_infra {
+    package "mqtt" as BS_mqtt
+    package "persistence" as BS_persistence
+  }
+}
+
+' === edge-mqtt ===
+package "edge-mqtt" {
+  package "mqtt" as EDGE_mqtt
+  package "adapter" as EDGE_adapter
+  package "infrastructure" as EDGE_infra
+}
+
+' === Frontend (React) – hvis den er separat ===
+package "Frontend" {
+  package "ui" as FE_ui
+  package "services" as FE_services
+}
+
+' ==== Afhængigheder (pile: bruger --> bliver brugt) ====
+
+' Frontend
+FE_ui --> FE_services
+FE_services --> APIGW_api : HTTP/REST
+' (eller direkte)
+FE_services --> ES_api : HTTP/REST (optional)
+
+' API-Gateway internt
+APIGW_api --> APIGW_app
+APIGW_app --> APIGW_clients
+APIGW_app --> APIGW_shared
+
+' API-Gateway mod andre services
+APIGW_app --> ORCH_api  : service calls
+APIGW_app --> ES_api    : direct API calls
+
+' Orchestrator internt
+ORCH_api --> ORCH_app
+ORCH_workflow --> ORCH_domain
+ORCH_services --> ORCH_domain
+ORCH_app --> ORCH_clients
+ORCH_app --> ORCH_persistence
+
+' Orchestrator mod andre services
+ORCH_clients --> ES_api
+ORCH_clients --> BS_api    : HTTP/REST
+' eller via messaging/mqtt:
+ORCH_app --> BS_mqtt : publish/subscribe
+
+' External-Service internt
+ES_api --> ES_app
+ES_app --> ES_domain
+ES_app --> ES_persistence
+ES_app --> ES_msg
+ES_web --> FE_services : (hvis FE lever i samme repo/monorepo)
+
+' BookScheduler_MQTT internt
+BS_scheduler --> BS_domain
+BS_scheduler --> BS_mqtt
+BS_mqtt --> BS_persistence
+
+' BookScheduler_MQTT mod edge-mqtt
+BS_mqtt --> EDGE_mqtt : MQTT broker topics
+
+' edge-mqtt internt
+EDGE_adapter --> EDGE_mqtt
+EDGE_adapter --> EDGE_infra
+
+@enduml

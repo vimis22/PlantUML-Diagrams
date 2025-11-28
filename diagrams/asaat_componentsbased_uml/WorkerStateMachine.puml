@@ -1,0 +1,49 @@
+@startuml
+title Machine Lifecycle (Linear Flow)
+hide empty description
+
+' Start
+[*] --> Idle
+
+' State 1: Idle
+state "Idle (Ready)" as Idle
+note right of Idle : IsBusy = false
+
+' Transition: Command Received
+Idle --> Checking : MQTT 'start' received
+
+' State 2: Validation logic
+state "Checking Prerequisites" as Checking
+note right of Checking
+  Binder checks DB:
+  Is Printing & Cover done?
+end note
+
+' Decision Point (The If/Else)
+state c1 <<choice>>
+Checking --> c1
+
+' Path A: Error / Rejection
+c1 --> Idle : <b>NO</b> (Not Ready)\n<i>Log Warning</i>
+
+' Path B: Success / Work
+c1 --> Working : <b>YES</b> (Ready)
+
+' State 3: Doing the work
+state "Working (Processing)" as Working
+note right of Working
+  IsBusy = true
+  Simulate Delay Loop
+end note
+
+' Transition: Done
+Working --> Finished : Progress = 100%
+
+' State 4: Cleanup
+state "Job Finished" as Finished
+note right of Finished : Publish 'done' event
+
+' Reset
+Finished --> Idle : Reset to Ready
+
+@enduml

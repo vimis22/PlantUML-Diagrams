@@ -1,0 +1,72 @@
+@startuml BookScheduler_Simple
+
+skinparam state {
+  BackgroundColor LightBlue
+  BorderColor Black
+  ArrowColor Black
+}
+
+[*] --> Idle
+
+Idle --> CheckingPendingBooks : System cycle\n(every 5 sec)
+
+state CheckingPendingBooks <<choice>>
+CheckingPendingBooks --> Idle : [No books pending]
+CheckingPendingBooks --> ParallelStages : [Books found]\nSet: bookId, title, pages, copies
+
+state ParallelStages {
+  [*] --> fork1
+
+  fork1 --> AssignPrinting
+  fork1 --> AssignCover
+
+  state AssignPrinting <<choice>>
+  AssignPrinting --> PrintingRunning : [Printer available]\nSet: machineId, status=running, progress=0
+  AssignPrinting --> PrintingQueued : [No printer available]\nSet: status=queued
+
+  PrintingQueued --> AssignPrinting : Machine becomes available
+
+  PrintingRunning --> PrintingDone : [progress=100]\nSet: status=done, machine.busy=false
+
+  state AssignCover <<choice>>
+  AssignCover --> CoverRunning : [Cover machine available]\nSet: machineId, status=running, progress=0
+  AssignCover --> CoverQueued : [No cover machine]\nSet: status=queued
+
+  CoverQueued --> AssignCover : Machine becomes available
+
+  CoverRunning --> CoverDone : [progress=100]\nSet: status=done, machine.busy=false
+
+  PrintingDone --> join1
+  CoverDone --> join1
+
+  join1 --> [*]
+}
+
+ParallelStages --> CheckBothComplete
+
+state CheckBothComplete <<choice>>
+CheckBothComplete --> WaitingForStages : [Printing OR Cover not done]
+CheckBothComplete --> AssignBinding : [Printing AND Cover done]
+
+WaitingForStages --> CheckBothComplete : Stage completion event
+
+state AssignBinding <<choice>>
+AssignBinding --> BindingRunning : [Binder available]\nSet: machineId, status=running, progress=0
+AssignBinding --> BindingQueued : [No binder]\nSet: status=queued
+
+BindingQueued --> AssignBinding : Machine becomes available
+
+BindingRunning --> BindingDone : [progress=100]\nSet: status=done, machine.busy=false
+
+state AssignPackaging <<choice>>
+BindingDone --> AssignPackaging
+AssignPackaging --> PackagingRunning : [Packager available]\nSet: machineId, status=running, progress=0
+AssignPackaging --> PackagingQueued : [No packager]\nSet: status=queued
+
+PackagingQueued --> AssignPackaging : Machine becomes available
+
+PackagingRunning --> BookCompleted : [progress=100]\nSet: status=done, machine.busy=false
+
+BookCompleted --> Idle : Book fully processed\nLog: "Book {bookId} completed"
+
+@enduml

@@ -1,0 +1,66 @@
+@startuml External-Service State Machine
+!define CONDITION [condition]
+!define EVENT event
+!define RESPONSE / response
+
+title External-Service (React SPA)\nRequest Flow State Machine
+
+[*] --> Idle
+
+state "Idle\n(Home Screen)" as Idle
+state "FormReady\n(Order Screen)" as FormReady
+state "Submitting\n(loading=true)" as Submitting
+state "Success\n(result set)" as Success
+state "ClientError\n(form validation)" as ClientError
+state "NetworkError\n(catch block)" as NetworkError
+
+Idle --> FormReady : User clicks "Create Order"\n/ navigate('/create-order')
+
+FormReady --> ClientError : User clicks Submit\n[!title || !author || pages<=0 || quantity<=0]\n/ setError("fill all fields...")
+
+FormReady --> Submitting : User clicks Submit\n[all fields valid]\n/ fetch POST to\nhttp://localhost:8080/api/v1/orchestrator/orders\n/ setLoading(true)
+
+Submitting --> Success : HTTP response received\n[res.ok === true && status 200/201]\n/ setResult(data: {orderId, state, createdAt})\n/ reset form state
+
+Submitting --> NetworkError : HTTP response received\n[res.ok === false]\n/ throw Error (caught)\n/ setError(err.message)
+
+Submitting --> NetworkError : fetch() rejects\n[network failure, timeout]\n/ catch(err)\n/ setError(err.message)
+
+Success --> FormReady : Display success message\n/ user sees orderId
+
+ClientError --> FormReady : Display error message\n/ user corrects input
+
+NetworkError --> FormReady : Display error message\n/ user retries
+
+FormReady --> Idle : User navigates home\n/ navigate('/')
+
+note right of Submitting
+  Request Body:
+  {
+    title, author, pages,
+    coverType, pageType, quantity
+  }
+
+  Code: FunctionMethods.tsx:50-56
+end note
+
+note right of Success
+  Response:
+  {
+    orderId: number,
+    state: "ORCHESTRATED",
+    createdAt: ISO-8601
+  }
+
+  Code: FunctionMethods.tsx:59-60
+end note
+
+note bottom of NetworkError
+  AMBIGUITY: Code throws Error when
+  res.ok===false (line 58), so both
+  server errors (400/500) and network
+  errors end up in same catch block.
+  No distinction in current impl.
+end note
+
+@enduml

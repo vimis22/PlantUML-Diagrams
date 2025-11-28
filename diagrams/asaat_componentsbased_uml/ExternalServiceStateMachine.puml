@@ -1,0 +1,41 @@
+@startuml External-Service State Machine
+[*] --> Idle
+
+state "Idle (Home Screen)" as Idle
+state "Form Ready" as FormReady
+state "Submitting" as Submitting
+state "Success Display" as Success
+state "Error Display" as ErrorDisplay
+state "Network Error" as NetworkError
+
+Idle --> FormReady : User clicks\n"Create Order"
+FormReady --> Submitting : User submits form\n(loading = true)
+
+Submitting --> Success : HTTP 200/201\nOrder created
+Submitting --> ErrorDisplay : HTTP 400/500\nValidation/Server error
+Submitting --> NetworkError : Network failure\n(ERR_NETWORK)
+
+Success --> Idle : User navigates home
+ErrorDisplay --> FormReady : User corrects form
+NetworkError --> FormReady : User retries
+
+note right of Submitting
+  POST to:
+  http://localhost:8080/
+  api/v1/orchestrator/orders
+
+  Body: {
+    title, author, pages,
+    coverType, pageType,
+    quantity
+  }
+end note
+
+note right of Success
+  Displays:
+  - Order ID
+  - Full response JSON
+  - Form reset
+end note
+
+@enduml
