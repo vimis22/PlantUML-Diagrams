@@ -1,0 +1,89 @@
+@startuml UnifiedScheduler_BDD
+title Block Definition Diagram - UnifiedScheduler
+
+left to right direction
+
+skinparam component {
+  BackgroundColor LightSteelBlue
+  BorderColor Black
+  FontSize 11
+}
+
+skinparam interface {
+  BackgroundColor LightYellow
+  BorderColor Black
+}
+
+package "UnifiedScheduler" <<component>> as UnifiedScheduler {
+
+  component "Program\n(Entry Point)" <<block>> as Program
+  component "MQTT Client\n(IMqttClient)" <<block>> as MqttClient
+
+  component "RedisService\n(State + Queues)" <<block>> as RedisService
+  component "TimescaleDBService\n(Orders + Analytics)" <<block>> as TimescaleDBService
+  component "JobQueueManager\n(Priority Queues)" <<block>> as JobQueueManager
+  component "OrderManager\n(Order Lifecycle)" <<block>> as OrderManager
+  component "OrderSubscriber\n(MQTT Orders)" <<block>> as OrderSubscriber
+  component "JobAssigner\n(Work Dispatch)" <<block>> as JobAssigner
+  component "HeartbeatObserver\n(Heartbeat Ingest)" <<block>> as HeartbeatObserver
+  component "HeartbeatMonitor\n(Failure Detection)" <<block>> as HeartbeatMonitor
+  component "QueueStatusPublisher\n(Queue Telemetry)" <<block>> as QueueStatusPublisher
+
+  Program ..> MqttClient           : creates
+  Program ..> RedisService         : creates
+  Program ..> TimescaleDBService   : creates
+  Program ..> JobQueueManager      : creates
+  Program ..> OrderManager         : creates
+  Program ..> OrderSubscriber      : creates/starts
+  Program ..> JobAssigner          : creates/starts
+  Program ..> HeartbeatObserver    : creates/starts
+  Program ..> HeartbeatMonitor     : creates/starts
+  Program ..> QueueStatusPublisher : creates/starts
+
+  JobQueueManager ..> RedisService       : enqueue/dequeue
+  OrderManager ..> RedisService          : unit state
+  OrderManager ..> TimescaleDBService    : orders
+  OrderManager ..> JobQueueManager       : queue units
+  OrderSubscriber ..> MqttClient         : subscribe orders
+  OrderSubscriber ..> OrderManager       : create orders
+  JobAssigner ..> MqttClient             : publish work
+  JobAssigner ..> RedisService           : machine/unit state
+  JobAssigner ..> TimescaleDBService     : order info
+  JobAssigner ..> JobQueueManager        : dequeue
+  HeartbeatObserver ..> MqttClient       : subscribe/publish
+  HeartbeatObserver ..> RedisService     : machine/unit state
+  HeartbeatObserver ..> TimescaleDBService : order completion
+  HeartbeatObserver ..> JobQueueManager  : requeue
+  HeartbeatMonitor ..> RedisService      : machine state
+  HeartbeatMonitor ..> TimescaleDBService : requeue analytics
+  HeartbeatMonitor ..> JobQueueManager   : requeue
+  QueueStatusPublisher ..> MqttClient    : publish status
+  QueueStatusPublisher ..> JobQueueManager : queue lengths
+}
+
+cloud "MQTT Broker\n(Mosquitto)" as MQTT
+database "Redis\n(State + Queues)" as REDIS
+database "TimescaleDB\n(orders, requeue_events)" as TSDB
+component "Machines A/B/C/D" <<block>> as Machines
+component "MQTT Dashboard\n(web client)" <<block>> as Dashboard
+
+MqttClient ..> MQTT : connects
+RedisService ..> REDIS : reads/writes
+TimescaleDBService ..> TSDB : queries/updates
+
+Machines ..> MQTT : publish heartbeats
+MQTT ..> Machines : work assignments (machines/{id}/work)
+
+Dashboard ..> MQTT : publish orders (scheduler/orders/create)
+MQTT ..> Dashboard : queue status + completion (scheduler/queue/status, scheduler/order/completed)
+
+legend right
+  Connection Types
+  ..>  : dependency (creates/uses/subscribe/publish/queries)
+
+  Component Types
+  <<component>> : main module boundary
+  <<block>>     : internal component
+endlegend
+
+@enduml
