@@ -6,27 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="78bc056b-ec4e-4b44-9c6d-bddbaf12b94b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/asaat_componentsbased_uml/APIGatewayStateMachine.puml" beforeDir="false" afterPath="$PROJECT_DIR$/diagrams/asaat_componentsbased_uml/APIGatewayStateMachine.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/asaat_componentsbased_uml/ASAABDDAPIGateway.puml" beforeDir="false" afterPath="$PROJECT_DIR$/diagrams/asaat_componentsbased_uml/ASAABDDAPIGateway.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/asaat_componentsbased_uml/ASAADetailedPackage.puml" beforeDir="false" afterPath="$PROJECT_DIR$/diagrams/asaat_componentsbased_uml/ASAADetailedPackage.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/asaat_componentsbased_uml/BDDDiagrams.puml" beforeDir="false" afterPath="$PROJECT_DIR$/diagrams/asaat_componentsbased_uml/BDDDiagrams.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/asaat_componentsbased_uml/ExternalServiceStateMachine.puml" beforeDir="false" afterPath="$PROJECT_DIR$/diagrams/asaat_componentsbased_uml/ExternalServiceStateMachine.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/asaat_componentsbased_uml/ProductionStateMachine.puml" beforeDir="false" afterPath="$PROJECT_DIR$/diagrams/asaat_componentsbased_uml/ProductionStateMachine.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/asaat_componentsbased_uml/RequirementDiagram.puml" beforeDir="false" afterPath="$PROJECT_DIR$/diagrams/asaat_componentsbased_uml/RequirementDiagram.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/asaat_componentsbased_uml/WorkerStateMachine.puml" beforeDir="false" afterPath="$PROJECT_DIR$/diagrams/asaat_componentsbased_uml/WorkerStateMachine.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/bachelorproject_uml/ExampleSequence.puml" beforeDir="false" afterPath="$PROJECT_DIR$/diagrams/bachelorproject_uml/ExampleSequence.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/bachelorproject_uml/SequenceDiagram.puml" beforeDir="false" afterPath="$PROJECT_DIR$/diagrams/bachelorproject_uml/SequenceDiagram.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/private_diagrams/APIGateway.puml" beforeDir="false" afterPath="$PROJECT_DIR$/diagrams/private_diagrams/APIGateway.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/private_diagrams/BDD_BookScheduler.puml" beforeDir="false" afterPath="$PROJECT_DIR$/diagrams/private_diagrams/BDD_BookScheduler.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/private_diagrams/BookScheduler1.puml" beforeDir="false" afterPath="$PROJECT_DIR$/diagrams/private_diagrams/BookScheduler1.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/private_diagrams/BookSchedulerIBD.puml" beforeDir="false" afterPath="$PROJECT_DIR$/diagrams/private_diagrams/BookSchedulerIBD.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/private_diagrams/BookSchedulerStateMachine.puml" beforeDir="false" afterPath="$PROJECT_DIR$/diagrams/private_diagrams/BookSchedulerStateMachine.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/private_diagrams/ComponentsbasedDiagrams.puml" beforeDir="false" afterPath="$PROJECT_DIR$/diagrams/private_diagrams/ComponentsbasedDiagrams.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/private_diagrams/ExternalService.puml" beforeDir="false" afterPath="$PROJECT_DIR$/diagrams/private_diagrams/ExternalService.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/private_diagrams/IBDVivek.puml" beforeDir="false" afterPath="$PROJECT_DIR$/diagrams/private_diagrams/IBDVivek.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/private_diagrams/Orchestrator.puml" beforeDir="false" afterPath="$PROJECT_DIR$/diagrams/private_diagrams/Orchestrator.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/private_diagrams/StateMachineScheduler.puml" beforeDir="false" afterPath="$PROJECT_DIR$/diagrams/private_diagrams/StateMachineScheduler.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diagrams/private_diagrams/SystemCommunication.puml" beforeDir="false" afterPath="$PROJECT_DIR$/diagrams/private_diagrams/SystemCommunication.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diagrams/private_diagrams/BDD-APIGateway.puml" beforeDir="false" afterPath="$PROJECT_DIR$/diagrams/private_diagrams/BDD-APIGateway.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diagrams/private_diagrams/BDD-ExternalService.puml" beforeDir="false" afterPath="$PROJECT_DIR$/diagrams/private_diagrams/BDD-ExternalService.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diagrams/private_diagrams/BDD-Orchestrator.puml" beforeDir="false" afterPath="$PROJECT_DIR$/diagrams/private_diagrams/BDD-Orchestrator.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diagrams/private_diagrams/UnifiedSchedulerBDD.puml" beforeDir="false" afterPath="$PROJECT_DIR$/diagrams/private_diagrams/UnifiedSchedulerBDD.puml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,6 +51,10 @@
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
 }</component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2
 }</component>
@@ -98,6 +85,13 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
+  <component name="RecapSpentCounter">
+    <option name="endsOfQuotaMs" value="1771448430260" />
+    <option name="spentUsd" value="0.0148555" />
+  </component>
+  <component name="RecapUselessUpdatesCounter">
+    <option name="suspendCountdown" value="8" />
+  </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\Projects\School_Projects\PlantUML-Diagrams\diagrams\management_uml" />

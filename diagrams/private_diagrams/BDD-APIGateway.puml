@@ -1,0 +1,25 @@
+@startuml APIGateway_Context_BDD
+title Block Definition Diagram - API-Gateway (External Context)
+
+left to right direction
+
+skinparam component {
+  BackgroundColor LightSteelBlue
+  BorderColor Black
+  FontSize 11
+}
+
+class "API-Gateway" as APIGateway <<block>>
+class "External-Service\n(Web UI)" as ExternalService <<block>>
+class "Orchestrator" as Orchestrator <<block>>
+class "Redis\n(Rate Limiting)" as Redis <<block>>
+
+ExternalService --> APIGateway : HTTP requests
+APIGateway --> Orchestrator : forward /api/v1/orchestrator/**
+APIGateway --> Redis : rate limiting state
+
+legend right
+  --> : directed association
+endlegend
+
+@enduml

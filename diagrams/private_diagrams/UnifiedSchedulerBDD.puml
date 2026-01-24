@@ -1,0 +1,35 @@
+@startuml UnifiedScheduler_Context_BDD
+title Block Definition Diagram - UnifiedScheduler (External Context)
+
+left to right direction
+
+skinparam component {
+  BackgroundColor LightSteelBlue
+  BorderColor Black
+  FontSize 11
+}
+
+skinparam interface {
+  BackgroundColor LightYellow
+  BorderColor Black
+}
+
+class "UnifiedScheduler" as UnifiedScheduler <<block>>
+
+class "MQTT Broker\n(Mosquitto)" as MQTT <<block>>
+class "Redis\n(State + Queues)" as REDIS <<block>>
+class "TimescaleDB\n(orders, requeue_events)" as TSDB <<block>>
+class "Machines A/B/C/D" as Machines <<block>>
+class "MQTT Dashboard\n(web client)" as Dashboard <<block>>
+
+UnifiedScheduler -- MQTT : messaging
+UnifiedScheduler -- REDIS : state + queues
+UnifiedScheduler -- TSDB : persistence + analytics
+UnifiedScheduler -- Machines : work + heartbeats
+UnifiedScheduler -- Dashboard : orders + telemetry
+
+legend right
+  -- : association (external relation)
+endlegend
+
+@enduml

@@ -1,0 +1,25 @@
+@startuml Orchestrator_Context_BDD
+title Block Definition Diagram - Orchestrator (External Context)
+
+left to right direction
+
+skinparam component {
+  BackgroundColor LightSteelBlue
+  BorderColor Black
+  FontSize 11
+}
+
+class "Orchestrator" as Orchestrator <<block>>
+class "API-Gateway" as APIGateway <<block>>
+class "PostgreSQL\n(bookproduction)" as Postgres <<block>>
+class "Kafka Broker" as Kafka <<block>>
+
+APIGateway --> Orchestrator : REST /api/v1/orchestrator/**
+Orchestrator --> Postgres : persist orders
+Orchestrator --> Kafka : publish orders.created
+
+legend right
+  --> : directed association
+endlegend
+
+@enduml
